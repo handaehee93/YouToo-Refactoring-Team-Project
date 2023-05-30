@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { BASE_API } from "../../util/API";
-
+import {signUp}  from '../../firebase';
+import { v4 as uuidv4 } from 'uuid';
+// import { getDatabase } from "firebase/database";
 const SingupContainer = styled.div`
   height: 100vh;
   display: flex;
@@ -123,6 +125,7 @@ interface FormValue {
   password: any;
 }
 
+// const database = getDatabase();
 function Signup() {
   const [signUpError, setSignUpError] = useState(false);
   const [errorMessage, setErrormessage] = useState("");
@@ -136,20 +139,23 @@ function Signup() {
   } = useForm<FormValue>();
 
   const onSubmit: SubmitHandler<FormValue> = (data) => {
-    BASE_API.post(`/users/sign-up`, {
-      nickname: data.nickname,
-      email: data.email,
-      password: data.password,
-    })
-      .then(() => {
-        setErrormessage("");
-        setSignUpError(false);
-        navigate("/login");
-      })
-      .catch((err) => {
-        setErrormessage(err.response.data.message);
-        setSignUpError(true);
-      });
+    console.log(data)
+    // const password = parseInt(data.password)
+    signUp(data.email, data.password)
+    // BASE_API.post(`/users/sign-up`, {
+    //   nickname: data.nickname,
+    //   email: data.email,
+    //   password: data.password,
+    // })
+    //   .then(() => {
+    //     setErrormessage("");
+    //     setSignUpError(false);
+    //     navigate("/login");
+    //   })
+    //   .catch((err) => {
+    //     setErrormessage(err.response.data.message);
+    //     setSignUpError(true);
+    //   });
   };
 
   return (
@@ -159,7 +165,7 @@ function Signup() {
         <Link to='/'>나만의 작은 음악 다이어리</Link>
       </Logo>
       <FormContainer>
-        <NicknameInput placeholder='닉네임' {...register("nickname")} />
+        {/* <NicknameInput placeholder='닉네임' {...register("nickname")} /> */}
         <EmailInput type='email' placeholder='이메일' {...register("email")} />
         <PasswordInput type='password' placeholder='비밀번호' {...register("password")} />
         <SignupButton type='button' onClick={handleSubmit(onSubmit)}>

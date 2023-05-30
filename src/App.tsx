@@ -9,6 +9,8 @@ import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { myContext, lightMode, darkMode } from "./theme";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Register from './components/Signup/Register';
 
 const GlobalStyle = createGlobalStyle`
   * {
