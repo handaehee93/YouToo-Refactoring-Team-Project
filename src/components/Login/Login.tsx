@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import { BASE_API } from "../../util/API";
+import { userLogin } from '../../firebase';
 
 const LoginContainer = styled.div`
   height: 100vh;
@@ -132,24 +133,30 @@ function Login() {
   } = useForm<FormValue>();
 
   const onSubmit: SubmitHandler<FormValue> = (data) => {
-    BASE_API.post(`/auth/login`, {
-      email: data.email,
-      password: data.password,
-    })
-      .then((res) => {
-        if (res.headers.authorization) {
-          localStorage.setItem("accessToken", res.headers.authorization);
-          localStorage.setItem("CURRENT_USER", JSON.stringify(res.data));
+    userLogin(data.email, data.password)
+      .then(user => {
+        if(user) {
+          navigate('/')
         }
-        setLoginError(false);
       })
-      .then(() => {
-        navigate("/");
-        window.location.reload();
-      })
-      .catch(() => {
-        setLoginError(true);
-      });
+    // BASE_API.post(`/auth/login`, {
+    //   email: data.email,
+    //   password: data.password,
+    // })
+    //   .then((res) => {
+    //     if (res.headers.authorization) {
+    //       localStorage.setItem("accessToken", res.headers.authorization);
+    //       localStorage.setItem("CURRENT_USER", JSON.stringify(res.data));
+    //     }
+    //     setLoginError(false);
+    //   })
+    //   .then(() => {
+    //     navigate("/");
+    //     window.location.reload();
+    //   })
+    //   .catch(() => {
+    //     setLoginError(true);
+    //   });
   };
 
   return (

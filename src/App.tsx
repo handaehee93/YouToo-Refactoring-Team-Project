@@ -5,12 +5,13 @@ import Login from "./pages/Login";
 import DetailDiary from "./pages/DetailDiary";
 import Signup from "./pages/Signup";
 import EditDiary from "./pages/EditDiary";
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { myContext, lightMode, darkMode } from "./theme";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Register from './components/Signup/Register';
+import { userState } from './firebase';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -27,7 +28,18 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+
+
 function App() {
+  // const navigate = useNavigate()
+  // useEffect(() => {
+  //   userState()
+  //     .then((user:any) => {
+  //       setUser(user)
+  //       navigate('/')
+  //     })
+  // },[])
+  const [user, setUser] =useState(null)
   const isLogin = localStorage.getItem("accessToken");
   const currentUser = JSON.parse(localStorage.getItem("CURRENT_USER")!);
 

@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 // import { getDatabase } from "firebase/database";
 import { getDatabase, ref, set } from "firebase/database";
 
@@ -36,15 +36,32 @@ function writeUserData(userId:string, email:any) {
 }
 
 // 회원 가입 함수
-export function  signUp (email:any, password:string) {
+export function   signUp (email:any, password:string) {
   createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
 
     const user = userCredential.user;
     console.log(user.uid, user.email)
     writeUserData(user.uid, user.email )
+    return
   })
-  .then((data) => {console.log(data)})
+  // .then((data) => {console.log(data)})
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
+
+}
+
+// 로그인 함수
+export async function userLogin (email:any, password:string) {
+  return signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in
+    const user = userCredential.user;
+    return user
+    // ...
+  })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
@@ -53,5 +70,19 @@ export function  signUp (email:any, password:string) {
 
 
 
-// const database = getDatabase(app);
-// console.log('hello')
+// userstate
+export async function userState () {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User
+      const uid = user.uid;
+      console.log(user)
+      return user
+      // ...
+    } else {
+      // User is signed out
+      // ...
+    }
+  });
+}

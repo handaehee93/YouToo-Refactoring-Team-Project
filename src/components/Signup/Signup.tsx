@@ -142,6 +142,7 @@ function Signup() {
     console.log(data)
     // const password = parseInt(data.password)
     signUp(data.email, data.password)
+    navigate("/login");
     // BASE_API.post(`/users/sign-up`, {
     //   nickname: data.nickname,
     //   email: data.email,
