@@ -4,6 +4,8 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import { BASE_API } from "../../util/API";
 import { userLogin } from '../../firebase';
+import { useAppDispatch } from '../../redux/store/hooks';
+import { logined } from '../../redux/slice/LoginSlice';
 
 const LoginContainer = styled.div`
   height: 100vh;
@@ -123,7 +125,7 @@ interface FormValue {
 
 function Login() {
   const [loginError, setLoginError] = useState(false);
-
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const {
@@ -137,6 +139,7 @@ function Login() {
       .then(user => {
         if(user) {
           navigate('/')
+          dispatch(logined())
         }
       })
     // BASE_API.post(`/auth/login`, {

@@ -4,6 +4,8 @@ import { BsFillSunFill, BsFillMoonStarsFill } from "react-icons/bs";
 import { useContext } from "react";
 import { myContext } from "../theme";
 import mainIcon from "../util/img/mainIcon.png";
+import { useAppSelector } from '../redux/store/hooks';
+import { selectCount } from '../redux/slice/LoginSlice';
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -90,9 +92,10 @@ const LoginButton = styled.button`
 
 function LogoutHeader() {
   const { isChange, changeMode }: any = useContext(myContext);
-
+  const LOGIN = useAppSelector(selectCount);
   return (
     <HeaderContainer>
+      {LOGIN && <p>로그인 상태다</p>}
       <HeaderWrapper>
         <Logo>
           <Link to='/'>
