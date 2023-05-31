@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 // import { getDatabase } from "firebase/database";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set, onValue, child, get } from "firebase/database";
 
 
 
@@ -85,4 +85,58 @@ export async function userState () {
       // ...
     }
   });
+}
+
+// 데이터 post하는 함수
+export function writeDiaryData(userId:any) {
+  set(ref(db, 'diarys/' + userId), {
+      diaryId: 2,
+      title: "테스트",
+      body: "테스트",
+      viewCount: 2,
+      likeCount: 2,
+      createdAt: "2023-02-22T07:14:00",
+      modifiedAt: "2023-02-22T07:14:00",
+      userNickname: "한대희",
+
+  });
+}
+export function writeComment(userId:any) {
+  set(ref(db, 'diarys/' + userId), {
+    diaryId: 2,
+    title: "테스트",
+    body: "테스트",
+    viewCount: 2,
+    likeCount: 2,
+    createdAt: "2023-02-22T07:14:00",
+    modifiedAt: "2023-02-22T07:14:00",
+    userNickname: "한대희",
+    comments:  {
+      "commentId": 8,
+      "diaryId": 2,
+      "body": "댓글 수정 테스트트",
+      "createdAt": "2023-03-22T11:00:00",
+      "modifiedAt": "2023-03-22T11:03:00",
+      "userNickname": null
+  }
+});
+}
+
+
+//데이터 불러오는 함수
+export async function getData () {
+  // const dbRef = ref(getDatabase());
+return get(ref(db, `diarys`))
+  .then((snapshot) => {
+  if (snapshot.exists()) {
+    // console.log(snapshot.val());
+    return Object.values(snapshot.val())
+  } else {
+    console.log("No data available");
+  }
+})
+// .then(data => console.log(data))
+.catch((error) => {
+  console.error(error);
+});
 }

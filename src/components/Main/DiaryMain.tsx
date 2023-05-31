@@ -2,8 +2,9 @@ import DiaryList from "./DiaryList";
 import Pagination from "./Pagination";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { DiaryData } from "../../util/Type";
+import { DiaryData, DiaryData2 } from "../../util/Type";
 import { BASE_API } from "../../util/API";
+import { getData, writeComment, writeDiaryData } from '../../firebase';
 
 const ListTab = styled.ul`
   display: flex;
@@ -64,7 +65,7 @@ const DiaryMainWrapper = styled.ul`
 `;
 
 function DiaryMain() {
-  const [diaryData, setDiaryData] = useState<DiaryData[]>([]); // 전체 diary 데이터
+  const [diaryData, setDiaryData] = useState<DiaryData2[]>([]); // 전체 diary 데이터
   const [currentTab, setCurrentTab] = useState<number>(0); // 탭 이동 상태
   const [page, setPage] = useState<number>(1); // 현재 페이지 번호 (기본값: 1페이지부터 노출)
 
@@ -74,12 +75,17 @@ function DiaryMain() {
   // 전체 diary 데이터 get 요청
   // /diary
   const getDiaryData = async () => {
-    try {
-      const res = await BASE_API.get(`http://ec2-15-164-230-157.ap-northeast-2.compute.amazonaws.com:8080`);
-      setDiaryData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
+    // getData()
+    //   .then((data)=> {
+    //     // console.log(data)
+    //     setDiaryData(data)
+    //   })
+    // try {
+    //   const res = await BASE_API.get(`http://ec2-15-164-230-157.ap-northeast-2.compute.amazonaws.com:8080`);
+    //   setDiaryData(res.data);
+    // } catch (err) {
+    //   console.error(err);
+    // }
   };
   useEffect(() => {
     getDiaryData();
@@ -108,6 +114,11 @@ function DiaryMain() {
   return (
     <main>
       <ListTab>
+        {/* <button onClick={()=> {writeDiaryData(2)}}>ddd</button> */}
+        <button onClick={() => {getData().then((data:any)=> {
+          setDiaryData(data)
+          console.log(data)})}}>getdata</button>
+          <button onClick={() => {writeComment(8)}}>addComment</button>
         {tagArr.map((tab, index) => {
           return (
             <li

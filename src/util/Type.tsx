@@ -11,9 +11,24 @@ export interface DiaryData {
   playlists: PlaylistData[];
   tag: string[];
 }
-
+export interface DiaryData2 {
+  diaryId: number;
+  title: string;
+  body: string;
+  viewCount: number;
+  likeCount: number;
+  createdAt: string;
+  modifiedAt: string;
+  userNickname: string;
+  comments: CommentData;
+  // playlists: PlaylistData[];
+  // tag: string[];
+}
 export interface DiaryDataProps {
   list: DiaryData;
+}
+export interface DiaryDataProps2 {
+  list: DiaryData2;
 }
 
 export interface PlaylistData {
@@ -28,6 +43,14 @@ export interface PlaylistDataProps {
 }
 
 export interface CommentData {
+  commentId: number;
+  diaryId: number;
+  body: string;
+  createdAt: string;
+  modifiedAt: string;
+  userNickname: string;
+}
+export interface CommentData2 {
   commentId: number;
   diaryId: number;
   body: string;

@@ -21,5 +21,5 @@ export const loginSlice = createSlice({
 
 
 export const {logined} = loginSlice.actions
-export const selectCount = (state: RootState) => state.login.isLogin
+export const selectLogin = (state: RootState) => state.login.isLogin
 export default loginSlice.reducer

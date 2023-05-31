@@ -178,7 +178,7 @@ export const UrlInput = styled.div`
   }
 `;
 
-function NewMain() {
+function NewMain():any {
   const [newTitle, setNewTitle] = useState<string>("");
   const [newBody, setNewBody] = useState<string>("");
   const [newPlayList, setNewPlayList] = useState<PlaylistData[]>([]);
@@ -223,38 +223,38 @@ function NewMain() {
   };
 
   // input에 등록한 Url 정보 불러옴
-  const getYoutubeData = async (id: any) => {
-    try {
-      const res =
-        await axios.get(`https://www.googleapis.com/youtube/v3/videos?id=${id}&key=${process.env.REACT_APP_YOUTUBE_API_KEY}
-      &part=snippet`);
-      return res.data.items[0]?.snippet;
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // const getYoutubeData = async (id: any) => {
+  //   try {
+  //     const res =
+  //       await axios.get(`https://www.googleapis.com/youtube/v3/videos?id=${id}&key=${process.env.REACT_APP_YOUTUBE_API_KEY}
+  //     &part=snippet`);
+  //     return res.data.items[0]?.snippet;
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   // 추가 버튼 클릭 시 플레이리스트 담는 이벤트 핸들러
-  const addPlayList = () => {
-    const musicInfo: PlaylistData = {};
-    const urlId = getVideoId(newUrl);
+  // const addPlayList = () => {
+  //   const musicInfo: PlaylistData = {};
+  //   const urlId = getVideoId(newUrl);
 
-    getYoutubeData(urlId)
-      .then((res) => {
-        musicInfo.channelId = res.channelId;
-        if (res.thumbnails.maxres) {
-          musicInfo.thumbnail = res.thumbnails.maxres.url;
-        } else {
-          musicInfo.thumbnail = res.thumbnails.medium.url;
-        }
-        musicInfo.title = res.title;
-        musicInfo.url = newUrl;
-      })
-      .then(() => {
-        setNewPlayList((value) => [...value, musicInfo]);
-        setNewUrl("");
-      });
-  };
+  //   getYoutubeData(urlId)
+  //     .then((res) => {
+  //       musicInfo.channelId = res.channelId;
+  //       if (res.thumbnails.maxres) {
+  //         musicInfo.thumbnail = res.thumbnails.maxres.url;
+  //       } else {
+  //         musicInfo.thumbnail = res.thumbnails.medium.url;
+  //       }
+  //       musicInfo.title = res.title;
+  //       musicInfo.url = newUrl;
+  //     })
+  //     .then(() => {
+  //       setNewPlayList((value) => [...value, musicInfo]);
+  //       setNewUrl("");
+  //     });
+  // };
 
   return (
     <MainContainer>
@@ -275,11 +275,11 @@ function NewMain() {
           <InfoArea>
             <UserInfo>
               <span className='text'>등록자</span>
-              {currentUser.nickname}
+              {/* {currentUser.nickname} */}
             </UserInfo>
             <UserInfo>
               <span className='text'>등록일</span>
-              {today.toString()}
+              {/* {today.toString()} */}
             </UserInfo>
           </InfoArea>
         </AlbumCoverArea>
@@ -299,11 +299,11 @@ function NewMain() {
               placeholder='유튜브 URL을 입력해 주세요'
               onChange={changeNewUrl}
             />
-            <button className='sumbit' onClick={addPlayList} disabled={newUrl.length === 0}>
+            <button className='sumbit' onClick={() => {}} disabled={newUrl.length === 0}>
               추가
             </button>
           </UrlInput>
-          {newPlayList?.map((value, index) => {
+          {/* {newPlayList?.map((value, index) => {
             return (
               <NewPlayList
                 list={value}
@@ -312,7 +312,7 @@ function NewMain() {
                 setNewPlayList={setNewPlayList}
               />
             );
-          })}
+          })} */}
         </PlayListArea>
       </MainWrapper>
     </MainContainer>

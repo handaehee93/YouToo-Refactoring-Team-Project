@@ -1,8 +1,50 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { DiaryDataProps } from "../../util/Type";
+import { DiaryDataProps, DiaryDataProps2 } from "../../util/Type";
 import { AiFillHeart } from "react-icons/ai";
 import { FaRegCommentDots } from "react-icons/fa";
+
+
+
+function DiaryList({ list }: DiaryDataProps2) {
+  const navigate = useNavigate();
+
+  // 디테일 페이지로 이동
+  const moveDetailDiary = () => {
+    navigate(`/DetailDiary/${list.diaryId}`,{state: {list:list}});
+  };
+
+  return (
+    <DiaryListContainer onClick={moveDetailDiary}>
+      {/* <Thumbnail src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' /> */}
+      <InfoArea>
+        <div className='infoTitle'>{list.title}</div>
+        <div className='infoDate'>{list.createdAt.substring(0, 10)}</div>
+        {/* <Tag>
+          {list.tag.map((value: string, index: number) => {
+            return <li key={index}>{value}</li>;
+          })}
+        </Tag> */}
+      </InfoArea>
+      <UserArea>
+        <ByUsername>
+          <Profile />
+          <div className='by'>by</div>
+          {list.userNickname}
+        </ByUsername>
+        <LikeAndComment>
+          <AiFillHeart className='likeIcon' size={16} />
+          {list.likeCount}
+          <FaRegCommentDots className='commentIcon' size={15} />
+          {/* {list.comments.length} */}
+        </LikeAndComment>
+      </UserArea>
+    </DiaryListContainer>
+  );
+}
+
+export default DiaryList;
+
 
 export const DiaryListContainer = styled.li`
   box-shadow: rgba(0, 0, 0, 0.04) 0px 4px 16px 0px;
@@ -112,42 +154,3 @@ export const LikeAndComment = styled.div`
     margin: 0 5px 0 10px;
   }
 `;
-
-function DiaryList({ list }: DiaryDataProps) {
-  const navigate = useNavigate();
-
-  // 디테일 페이지로 이동
-  const moveDetailDiary = () => {
-    navigate(`/DetailDiary/${list.diaryId}`);
-  };
-
-  return (
-    <DiaryListContainer onClick={moveDetailDiary}>
-      <Thumbnail src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
-      <InfoArea>
-        <div className='infoTitle'>{list.title}</div>
-        <div className='infoDate'>{list.createdAt.substring(0, 10)}</div>
-        {/* <Tag>
-          {list.tag.map((value: string, index: number) => {
-            return <li key={index}>{value}</li>;
-          })}
-        </Tag> */}
-      </InfoArea>
-      <UserArea>
-        <ByUsername>
-          <Profile />
-          <div className='by'>by</div>
-          {list.userNickname}
-        </ByUsername>
-        <LikeAndComment>
-          <AiFillHeart className='likeIcon' size={16} />
-          {list.likeCount}
-          <FaRegCommentDots className='commentIcon' size={15} />
-          {list.comments.length}
-        </LikeAndComment>
-      </UserArea>
-    </DiaryListContainer>
-  );
-}
-
-export default DiaryList;

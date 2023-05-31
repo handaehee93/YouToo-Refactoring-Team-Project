@@ -141,17 +141,17 @@ function LoginHeader() {
   const navigate = useNavigate();
 
   // 내 유저 정보 get 요청
-  const getImageData = async () => {
-    try {
-      const res = await BASE_API.get(`/users/${currentUser.userId}`);
-      setImageData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  useEffect(() => {
-    getImageData();
-  }, []);
+  // const getImageData = async () => {
+  //   try {
+  //     const res = await BASE_API.get(`/users/${currentUser.userId}`);
+  //     setImageData(res.data);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getImageData();
+  // }, []);
 
   // 드롬다운 오픈 이벤트
   const openDropdown = () => {
@@ -198,7 +198,7 @@ function LoginHeader() {
           {isOpen ? (
             <ul className='dropdown' onClick={closeDropdown}>
               <Link to='/Mypage'>
-                <li>마이페이지지</li>
+                <li>마이페이지</li>
               </Link>
               <li onClick={logOut}>로그아웃</li>
             </ul>

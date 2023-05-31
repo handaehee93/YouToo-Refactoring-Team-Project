@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useState } from "react";
-import { CommentData } from "../../util/Type";
+import { CommentData2 } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
 import { useContext } from "react";
 import { myContext } from "../../theme";
@@ -159,12 +159,14 @@ const DeleteModalView = styled.div`
   }
 `;
 
-interface CommentDataProps {
-  list: CommentData;
+interface CommentDataPropss {
+  list: CommentData2;
   getDetailData: React.Dispatch<React.SetStateAction<object>>;
 }
 
-function CommentList({ list, getDetailData }: CommentDataProps) {
+function CommentList({ list, getDetailData }: CommentDataPropss) {
+  console.log('list', list.body)
+  // const objList = Object.fromEntries(list) 
   const [commentContent, setCommentContent] = useState(list.body);
   const [click, setClick] = useState<boolean>(false);
   const [deleteCommentModal, setDeleteCommentModal] = useState<boolean>(false);
@@ -267,7 +269,7 @@ function CommentList({ list, getDetailData }: CommentDataProps) {
         ) : (
           <div className='content'>{list.body}</div>
         )}
-        <div className='date'>{list.createdAt.substring(0, 10)}</div>
+        {/* <div className='date'>{list.createdAt.substring(0, 10)}</div> */}
       </CommentListWrapper>
     </CommentListContainer>
   );

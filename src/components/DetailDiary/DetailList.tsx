@@ -3,13 +3,247 @@ import CommentList from "./CommentList";
 import DetailPlayList from "./DetailPlayList";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { DiaryData } from "../../util/Type";
+import { DiaryData, DiaryData2 } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { RiErrorWarningLine } from "react-icons/ri";
 import DOMPurify from "dompurify";
 import { useContext } from "react";
 import { myContext } from "../../theme";
+
+
+
+interface DiaryDataPropss {
+  list: DiaryData2;
+  getDetailData: React.Dispatch<React.SetStateAction<object>>;
+}
+// commentId
+function DetailList({ list, getDetailData }: DiaryDataPropss) {
+  const [checkLike, setCheckLike] = useState<boolean>(false);
+  const [commentBody, setCommentBody] = useState<string>("");
+  const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
+  const [ruleModal, setRuleModal] = useState<boolean>(false);
+
+  const commentData = [list.comments]; // 선택한 다이어리의 코멘트 정보
+  // const arrComment = Object.values(commentData)
+  console.log('commentDAta', commentData)
+  // const playlistData = list.playlists; // 선택한 플레이리스트의 정보
+
+  const { diaryId } = useParams();
+  const navigate = useNavigate();
+  const { currentUser }: any = useContext(myContext);
+  const myDiary: boolean = list.userNickname === currentUser?.nickname;
+
+  // 좋아요 버튼
+  const plusLikeCount = async () => {
+    if (checkLike === false) {
+      const like = {
+        likeCount: list.likeCount + 1,
+      };
+      const res = await TOKEN_API.patch(`/diary/${diaryId}`, like);
+      getDetailData(res.data);
+      setCheckLike(true);
+    } else {
+      const like = {
+        likeCount: list.likeCount - 1,
+      };
+      const res = await TOKEN_API.patch(`/diary/${diaryId}`, like);
+      getDetailData(res.data);
+      setCheckLike(false);
+    }
+  };
+
+  // 다이어리 삭제 모달 오픈 이벤트 핸들러
+  const openModalHandler = () => {
+    setWithdrawalModalOpen(!withDrawalModalOpen);
+    document.body.style.cssText = `
+    position: fixed;
+    top: -${window.scrollY}px;
+    overflow-y: scroll;
+    width: 100%;`;
+  };
+
+  // 다이어리 삭제 모달 클로즈 이벤트 핸들러
+  const closeModalHandler = () => {
+    setWithdrawalModalOpen(!withDrawalModalOpen);
+    const scrollY = document.body.style.top;
+    document.body.style.cssText = "";
+    window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
+  };
+
+  // 선택한 다이어리 delete 요청
+  const postDelete = async () => {
+    await TOKEN_API.delete(`/diary/${diaryId}`);
+    const scrollY = document.body.style.top;
+    document.body.style.cssText = "";
+    window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
+    navigate("/");
+  };
+
+  // 댓글 post 요청
+  const submitHandler = async () => {
+    const newComment = {
+      diaryId: diaryId,
+      body: commentBody,
+    };
+    const res = await TOKEN_API.post(`/comment`, newComment);
+    getDetailData(res.data);
+    setCommentBody("");
+  };
+
+  // 댓글 작성 체인지 이벤트
+  const changeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentBody(e.target.value);
+  };
+
+  // 댓글 운영 원칙 오픈 모달 오픈 이벤트 핸들러
+  const openRuleModalHandler = () => {
+    setRuleModal(!ruleModal);
+    document.body.style.cssText = `
+    position: fixed;
+    top: -${window.scrollY}px;
+    overflow-y: scroll;
+    width: 100%;`;
+  };
+
+  // 댓글 운영 원칙 모달 클로즈 이벤트 핸들러
+  const closeRuleModalHandler = () => {
+    setRuleModal(!ruleModal);
+    const scrollY = document.body.style.top;
+    document.body.style.cssText = "";
+    window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
+  };
+
+  // 수정 페이지로 이동
+  const moveEditDiary = () => {
+    navigate(`/EditDiary/${list.diaryId}`);
+  };
+
+  return (
+    <DetailMainContainer>
+      <DetailMainWrapper>
+        <TitleArea>
+          <div className='DetailTitle'>{list.title}</div>
+          <ButtonArea>
+            {myDiary === true ? (
+              <>
+                <button className='edit' onClick={moveEditDiary}>
+                  수정
+                </button>
+                <button className='delete' onClick={openModalHandler}>
+                  삭제
+                </button>
+              </>
+            ) : null}
+            {withDrawalModalOpen ? (
+              <DeleteModalBack>
+                <DeleteModalView>
+                  <div className='deleteModalTitle'>다이어리를 삭제 하시겠습니까?</div>
+                  <div className='warningText'>삭제한 다이어리는 복구되지 않습니다.</div>
+                  <button className='deleteCancelButton' onClick={closeModalHandler}>
+                    취소
+                  </button>
+                  <button
+                    className='deleteButton'
+                    onClick={() => {
+                      postDelete();
+                      closeModalHandler();
+                    }}
+                  >
+                    삭제
+                  </button>
+                </DeleteModalView>
+              </DeleteModalBack>
+            ) : null}
+            <button className='like' onClick={plusLikeCount}>
+              {checkLike === true ? (
+                <AiFillHeart className='likeIcon' size={16} />
+              ) : (
+                <AiOutlineHeart className='likeIcon' size={16} />
+              )}
+              좋아요
+              <span className='likeCount'>{list.likeCount}</span>
+            </button>
+          </ButtonArea>
+        </TitleArea>
+        <AlbumCoverArea>
+          {/* <img className='coverImg' src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' /> */}
+          <InfoArea>
+            <UserInfo>
+              <span className='text'>등록자</span>
+              {list.userNickname}
+            </UserInfo>
+            <UserInfo>
+              <span className='text'>등록일</span>
+              {list.createdAt.substring(0, 10)}
+            </UserInfo>
+          </InfoArea>
+        </AlbumCoverArea>
+        <AlbumInfoArea>
+          <div className='playTitle'>다이어리 소개</div>
+          <div
+            className='playContent'
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(list.body) }}
+          ></div>
+        </AlbumInfoArea>
+        <PlayListArea>
+          <div className='playTitle'>다이어리 수록곡</div>
+          {/* {playlistData?.map((value, index) => {
+            return <DetailPlayList list={value} key={index} />;
+          })} */}
+        </PlayListArea>
+        <CommentInputArea>
+          <div className='commentTitle'>
+            <span className='commentCount'>댓글 ({commentData.length})</span>
+            <div className='commentRule' onClick={openRuleModalHandler}>
+              <RiErrorWarningLine className='ruleIcon' size={16} />
+              댓글 운영 원칙
+            </div>
+            {ruleModal ? (
+              <DeleteModalBack>
+                <RuleModalView>
+                  <div className='ruleModalTitle'>나만의 작은 음악 다이어리 댓글 운영 원칙</div>
+                  <div className='warningText'>
+                    <div>1. 욕설 및 비방 글을 등록하지 말아 주세요</div>
+                    <div>
+                      2. 한 페이지 내에서 동일한 내용의 글을 반복적으로 3회 이상 등록하지 말아
+                      주세요.
+                    </div>
+                    <div>3. 홍보 및 상업성 글을 등록하지 말아 주세요.</div>
+                    <div>4. 음란성 글을 등록하지 말아 주세요.</div>
+                    <div>5. 악성코드를 유포하지 말아주세요.</div>
+                    <div>6. 본인 및 타인의 개인 정보를 유출하지 말아 주세요.</div>
+                    <div>7. 반사회성 글을 등록하지 말아주세요.</div>
+                  </div>
+                  <button className='confirmButton' onClick={closeRuleModalHandler}>
+                    확인
+                  </button>
+                </RuleModalView>
+              </DeleteModalBack>
+            ) : null}
+          </div>
+          <TextArea>
+            <textarea
+              value={commentBody}
+              placeholder='댓글을 작성하세요'
+              onChange={changeHandler}
+            />
+            <button className='sumbit' onClick={submitHandler} disabled={commentBody.length === 0}>
+              등록
+            </button>
+          </TextArea>
+          {commentData?.map((value) => {
+            console.log('value', value)
+            return <CommentList list={value} key={value.commentId} getDetailData={getDetailData} />;
+          })}
+        </CommentInputArea>
+      </DetailMainWrapper>
+    </DetailMainContainer>
+  );
+}
+
+export default DetailList;
+
 
 const DetailMainContainer = styled.div`
   display: flex;
@@ -348,231 +582,3 @@ const RuleModalView = styled.div`
     }
   }
 `;
-
-interface DiaryDataProps {
-  list: DiaryData;
-  getDetailData: React.Dispatch<React.SetStateAction<object>>;
-}
-
-function DetailList({ list, getDetailData }: DiaryDataProps) {
-  const [checkLike, setCheckLike] = useState<boolean>(false);
-  const [commentBody, setCommentBody] = useState<string>("");
-  const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
-  const [ruleModal, setRuleModal] = useState<boolean>(false);
-
-  const commentData = list.comments; // 선택한 다이어리의 코멘트 정보
-  const playlistData = list.playlists; // 선택한 플레이리스트의 정보
-
-  const { diaryId } = useParams();
-  const navigate = useNavigate();
-  const { currentUser }: any = useContext(myContext);
-  const myDiary: boolean = list.userNickname === currentUser?.nickname;
-
-  // 좋아요 버튼
-  const plusLikeCount = async () => {
-    if (checkLike === false) {
-      const like = {
-        likeCount: list.likeCount + 1,
-      };
-      const res = await TOKEN_API.patch(`/diary/${diaryId}`, like);
-      getDetailData(res.data);
-      setCheckLike(true);
-    } else {
-      const like = {
-        likeCount: list.likeCount - 1,
-      };
-      const res = await TOKEN_API.patch(`/diary/${diaryId}`, like);
-      getDetailData(res.data);
-      setCheckLike(false);
-    }
-  };
-
-  // 다이어리 삭제 모달 오픈 이벤트 핸들러
-  const openModalHandler = () => {
-    setWithdrawalModalOpen(!withDrawalModalOpen);
-    document.body.style.cssText = `
-    position: fixed;
-    top: -${window.scrollY}px;
-    overflow-y: scroll;
-    width: 100%;`;
-  };
-
-  // 다이어리 삭제 모달 클로즈 이벤트 핸들러
-  const closeModalHandler = () => {
-    setWithdrawalModalOpen(!withDrawalModalOpen);
-    const scrollY = document.body.style.top;
-    document.body.style.cssText = "";
-    window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
-  };
-
-  // 선택한 다이어리 delete 요청
-  const postDelete = async () => {
-    await TOKEN_API.delete(`/diary/${diaryId}`);
-    const scrollY = document.body.style.top;
-    document.body.style.cssText = "";
-    window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
-    navigate("/");
-  };
-
-  // 댓글 post 요청
-  const submitHandler = async () => {
-    const newComment = {
-      diaryId: diaryId,
-      body: commentBody,
-    };
-    const res = await TOKEN_API.post(`/comment`, newComment);
-    getDetailData(res.data);
-    setCommentBody("");
-  };
-
-  // 댓글 작성 체인지 이벤트
-  const changeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCommentBody(e.target.value);
-  };
-
-  // 댓글 운영 원칙 오픈 모달 오픈 이벤트 핸들러
-  const openRuleModalHandler = () => {
-    setRuleModal(!ruleModal);
-    document.body.style.cssText = `
-    position: fixed;
-    top: -${window.scrollY}px;
-    overflow-y: scroll;
-    width: 100%;`;
-  };
-
-  // 댓글 운영 원칙 모달 클로즈 이벤트 핸들러
-  const closeRuleModalHandler = () => {
-    setRuleModal(!ruleModal);
-    const scrollY = document.body.style.top;
-    document.body.style.cssText = "";
-    window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
-  };
-
-  // 수정 페이지로 이동
-  const moveEditDiary = () => {
-    navigate(`/EditDiary/${list.diaryId}`);
-  };
-
-  return (
-    <DetailMainContainer>
-      <DetailMainWrapper>
-        <TitleArea>
-          <div className='DetailTitle'>{list.title}</div>
-          <ButtonArea>
-            {myDiary === true ? (
-              <>
-                <button className='edit' onClick={moveEditDiary}>
-                  수정
-                </button>
-                <button className='delete' onClick={openModalHandler}>
-                  삭제
-                </button>
-              </>
-            ) : null}
-            {withDrawalModalOpen ? (
-              <DeleteModalBack>
-                <DeleteModalView>
-                  <div className='deleteModalTitle'>다이어리를 삭제 하시겠습니까?</div>
-                  <div className='warningText'>삭제한 다이어리는 복구되지 않습니다.</div>
-                  <button className='deleteCancelButton' onClick={closeModalHandler}>
-                    취소
-                  </button>
-                  <button
-                    className='deleteButton'
-                    onClick={() => {
-                      postDelete();
-                      closeModalHandler();
-                    }}
-                  >
-                    삭제
-                  </button>
-                </DeleteModalView>
-              </DeleteModalBack>
-            ) : null}
-            <button className='like' onClick={plusLikeCount}>
-              {checkLike === true ? (
-                <AiFillHeart className='likeIcon' size={16} />
-              ) : (
-                <AiOutlineHeart className='likeIcon' size={16} />
-              )}
-              좋아요
-              <span className='likeCount'>{list.likeCount}</span>
-            </button>
-          </ButtonArea>
-        </TitleArea>
-        <AlbumCoverArea>
-          <img className='coverImg' src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
-          <InfoArea>
-            <UserInfo>
-              <span className='text'>등록자</span>
-              {list.userNickname}
-            </UserInfo>
-            <UserInfo>
-              <span className='text'>등록일</span>
-              {list.createdAt.substring(0, 10)}
-            </UserInfo>
-          </InfoArea>
-        </AlbumCoverArea>
-        <AlbumInfoArea>
-          <div className='playTitle'>다이어리 소개</div>
-          <div
-            className='playContent'
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(list.body) }}
-          ></div>
-        </AlbumInfoArea>
-        <PlayListArea>
-          <div className='playTitle'>다이어리 수록곡</div>
-          {playlistData?.map((value, index) => {
-            return <DetailPlayList list={value} key={index} />;
-          })}
-        </PlayListArea>
-        <CommentInputArea>
-          <div className='commentTitle'>
-            <span className='commentCount'>댓글 ({commentData.length})</span>
-            <div className='commentRule' onClick={openRuleModalHandler}>
-              <RiErrorWarningLine className='ruleIcon' size={16} />
-              댓글 운영 원칙
-            </div>
-            {ruleModal ? (
-              <DeleteModalBack>
-                <RuleModalView>
-                  <div className='ruleModalTitle'>나만의 작은 음악 다이어리 댓글 운영 원칙</div>
-                  <div className='warningText'>
-                    <div>1. 욕설 및 비방 글을 등록하지 말아 주세요</div>
-                    <div>
-                      2. 한 페이지 내에서 동일한 내용의 글을 반복적으로 3회 이상 등록하지 말아
-                      주세요.
-                    </div>
-                    <div>3. 홍보 및 상업성 글을 등록하지 말아 주세요.</div>
-                    <div>4. 음란성 글을 등록하지 말아 주세요.</div>
-                    <div>5. 악성코드를 유포하지 말아주세요.</div>
-                    <div>6. 본인 및 타인의 개인 정보를 유출하지 말아 주세요.</div>
-                    <div>7. 반사회성 글을 등록하지 말아주세요.</div>
-                  </div>
-                  <button className='confirmButton' onClick={closeRuleModalHandler}>
-                    확인
-                  </button>
-                </RuleModalView>
-              </DeleteModalBack>
-            ) : null}
-          </div>
-          <TextArea>
-            <textarea
-              value={commentBody}
-              placeholder='댓글을 작성하세요'
-              onChange={changeHandler}
-            />
-            <button className='sumbit' onClick={submitHandler} disabled={commentBody.length === 0}>
-              등록
-            </button>
-          </TextArea>
-          {commentData?.map((value) => {
-            return <CommentList list={value} key={value.commentId} getDetailData={getDetailData} />;
-          })}
-        </CommentInputArea>
-      </DetailMainWrapper>
-    </DetailMainContainer>
-  );
-}
-
-export default DetailList;
