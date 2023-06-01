@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { TOKEN_API } from "../../util/API";
 import ReactQuill from "react-quill";
@@ -8,6 +8,166 @@ import axios from "axios";
 import NewPlayList from "./NewPlayList";
 import { myContext } from "../../theme";
 import { PlaylistData } from "../../util/Type";
+import { getUserData, userState } from '../../firebase';
+
+
+
+function NewMain():any {
+  const [newTitle, setNewTitle] = useState<string>("");
+  const [newBody, setNewBody] = useState<string>("");
+  const [newPlayList, setNewPlayList] = useState<PlaylistData[]>([]);
+  const [newUrl, setNewUrl] = useState<string>("");
+  const [userUid, setUserUid] =useState<string>('')
+  const [nickname, setNickname] = useState<string[] | any>([])
+  const navigate = useNavigate();
+  const { currentUser }: any = useContext(myContext);
+  
+  const today: string = new Date().toISOString().substring(0, 10);
+  
+  console.log(nickname[1])
+  useEffect(() => {
+    userState((user:any) => setUserUid(user.uid))
+      // .then((res) => console.log('uid',res))
+  },[])
+  const nick = nickname[1]
+  useEffect(() => {
+    getUserData(userUid)
+      .then(res => setNickname(res))
+  },[])
+  // 다이어리 post 요청
+  const submitHandler = async () => {
+    const newDiary = {
+      title: newTitle,
+      body: newBody,
+      playlists: newPlayList,
+    };
+    await TOKEN_API.post(`/diary`, newDiary);
+    navigate(`/`);
+  };
+
+  // 제목 수정 체인지 이벤트
+  const changeNewTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTitle(e.target.value);
+  };
+
+  // 플레이리스트 수정 체인지 이벤트
+  const changeNewUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewUrl(e.target.value);
+  };
+
+  // 전체 url을 입력받은 후 id만 필터링
+  const getVideoId = (url: string) => {
+    if (url.indexOf("/watch") > -1) {
+      const arr = url.replaceAll(/=|&/g, "?").split("?");
+      return arr[arr.indexOf("v") + 1];
+    } else if (url.indexOf("/youtu.be") > -1) {
+      const arr = url.replaceAll(/=|&|\//g, "?").split("?");
+      return arr[arr.indexOf("youtu.be") + 1];
+    } else {
+      return "none";
+    }
+  };
+
+  // input에 등록한 Url 정보 불러옴
+  const getYoutubeData = async (id: any) => {
+    try {
+      const res =
+        await axios.get(`https://www.googleapis.com/youtube/v3/videos?id=${id}&key=${process.env.REACT_APP_YOUTUBE_API_KEY}
+      &part=snippet`);
+      return res.data.items[0]?.snippet;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // 추가 버튼 클릭 시 플레이리스트 담는 이벤트 핸들러
+  const addPlayList = () => {
+    const musicInfo: PlaylistData = {};
+    const urlId = getVideoId(newUrl);
+
+    getYoutubeData(urlId)
+      .then((res) => {
+        musicInfo.channelId = res.channelId;
+        if (res.thumbnails.maxres) {
+          musicInfo.thumbnail = res.thumbnails.maxres.url;
+        } else {
+          musicInfo.thumbnail = res.thumbnails.medium.url;
+        }
+        musicInfo.title = res.title;
+        musicInfo.url = newUrl;
+      })
+      .then(() => {
+        setNewPlayList((value) => [...value, musicInfo]);
+        setNewUrl("");
+      });
+  };
+
+  return (
+    <MainContainer>
+      <MainWrapper>
+        <TitleArea>
+          <input
+            className='inputTitle'
+            type='text'
+            placeholder='제목을 입력하세요'
+            onChange={changeNewTitle}
+          />
+          <SubmitButton onClick={submitHandler} disabled={newTitle.length === 0}>
+            등록하기
+          </SubmitButton>
+        </TitleArea>
+        <AlbumCoverArea>
+          <div className='coverImg'></div>
+          <InfoArea>
+            <UserInfo>
+              <span className='text'>등록자</span>
+              {nick}
+              {/* {nickname[1]} */}
+              {/* {currentUser.nickname} */}
+            </UserInfo>
+            <UserInfo>
+              <span className='text'>등록일</span>
+              {today.toString()}
+            </UserInfo>
+          </InfoArea>
+        </AlbumCoverArea>
+        <AlbumInfoArea>
+          <div className='playTitle'>다이어리 소개</div>
+          <ReactQuill
+            className='playContent'
+            placeholder='나만의 다이어리를 작성해 보세요'
+            onChange={(e) => setNewBody(e)}
+          />
+        </AlbumInfoArea>
+        <PlayListArea>
+          <div className='playTitle'>다이어리 수록곡</div>
+          <UrlInput>
+            <input
+              value={newUrl}
+              placeholder='유튜브 URL을 입력해 주세요'
+              onChange={changeNewUrl}
+            />
+            <button className='sumbit' onClick={() => {addPlayList()}} disabled={newUrl.length === 0}>
+              추가
+            </button>
+          </UrlInput>
+          {/* {newPlayList?.map((value, index) => {
+            return (
+              <NewPlayList
+                list={value}
+                key={index}
+                newPlayList={newPlayList}
+                setNewPlayList={setNewPlayList}
+              />
+            );
+          })} */}
+        </PlayListArea>
+      </MainWrapper>
+    </MainContainer>
+  );
+}
+
+export default NewMain;
 
 export const MainContainer = styled.div`
   display: flex;
@@ -177,146 +337,3 @@ export const UrlInput = styled.div`
     }
   }
 `;
-
-function NewMain():any {
-  const [newTitle, setNewTitle] = useState<string>("");
-  const [newBody, setNewBody] = useState<string>("");
-  const [newPlayList, setNewPlayList] = useState<PlaylistData[]>([]);
-  const [newUrl, setNewUrl] = useState<string>("");
-
-  const navigate = useNavigate();
-  const { currentUser }: any = useContext(myContext);
-  const today: string = new Date().toISOString().substring(0, 10);
-
-  // 다이어리 post 요청
-  const submitHandler = async () => {
-    const newDiary = {
-      title: newTitle,
-      body: newBody,
-      playlists: newPlayList,
-    };
-    await TOKEN_API.post(`/diary`, newDiary);
-    navigate(`/`);
-  };
-
-  // 제목 수정 체인지 이벤트
-  const changeNewTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTitle(e.target.value);
-  };
-
-  // 플레이리스트 수정 체인지 이벤트
-  const changeNewUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewUrl(e.target.value);
-  };
-
-  // 전체 url을 입력받은 후 id만 필터링
-  const getVideoId = (url: string) => {
-    if (url.indexOf("/watch") > -1) {
-      const arr = url.replaceAll(/=|&/g, "?").split("?");
-      return arr[arr.indexOf("v") + 1];
-    } else if (url.indexOf("/youtu.be") > -1) {
-      const arr = url.replaceAll(/=|&|\//g, "?").split("?");
-      return arr[arr.indexOf("youtu.be") + 1];
-    } else {
-      return "none";
-    }
-  };
-
-  // input에 등록한 Url 정보 불러옴
-  // const getYoutubeData = async (id: any) => {
-  //   try {
-  //     const res =
-  //       await axios.get(`https://www.googleapis.com/youtube/v3/videos?id=${id}&key=${process.env.REACT_APP_YOUTUBE_API_KEY}
-  //     &part=snippet`);
-  //     return res.data.items[0]?.snippet;
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
-  // 추가 버튼 클릭 시 플레이리스트 담는 이벤트 핸들러
-  // const addPlayList = () => {
-  //   const musicInfo: PlaylistData = {};
-  //   const urlId = getVideoId(newUrl);
-
-  //   getYoutubeData(urlId)
-  //     .then((res) => {
-  //       musicInfo.channelId = res.channelId;
-  //       if (res.thumbnails.maxres) {
-  //         musicInfo.thumbnail = res.thumbnails.maxres.url;
-  //       } else {
-  //         musicInfo.thumbnail = res.thumbnails.medium.url;
-  //       }
-  //       musicInfo.title = res.title;
-  //       musicInfo.url = newUrl;
-  //     })
-  //     .then(() => {
-  //       setNewPlayList((value) => [...value, musicInfo]);
-  //       setNewUrl("");
-  //     });
-  // };
-
-  return (
-    <MainContainer>
-      <MainWrapper>
-        <TitleArea>
-          <input
-            className='inputTitle'
-            type='text'
-            placeholder='제목을 입력하세요'
-            onChange={changeNewTitle}
-          />
-          <SubmitButton onClick={submitHandler} disabled={newTitle.length === 0}>
-            등록하기
-          </SubmitButton>
-        </TitleArea>
-        <AlbumCoverArea>
-          <div className='coverImg'></div>
-          <InfoArea>
-            <UserInfo>
-              <span className='text'>등록자</span>
-              {/* {currentUser.nickname} */}
-            </UserInfo>
-            <UserInfo>
-              <span className='text'>등록일</span>
-              {/* {today.toString()} */}
-            </UserInfo>
-          </InfoArea>
-        </AlbumCoverArea>
-        <AlbumInfoArea>
-          <div className='playTitle'>다이어리 소개</div>
-          <ReactQuill
-            className='playContent'
-            placeholder='나만의 다이어리를 작성해 보세요'
-            onChange={(e) => setNewBody(e)}
-          />
-        </AlbumInfoArea>
-        <PlayListArea>
-          <div className='playTitle'>다이어리 수록곡</div>
-          <UrlInput>
-            <input
-              value={newUrl}
-              placeholder='유튜브 URL을 입력해 주세요'
-              onChange={changeNewUrl}
-            />
-            <button className='sumbit' onClick={() => {}} disabled={newUrl.length === 0}>
-              추가
-            </button>
-          </UrlInput>
-          {/* {newPlayList?.map((value, index) => {
-            return (
-              <NewPlayList
-                list={value}
-                key={index}
-                newPlayList={newPlayList}
-                setNewPlayList={setNewPlayList}
-              />
-            );
-          })} */}
-        </PlayListArea>
-      </MainWrapper>
-    </MainContainer>
-  );
-}
-
-export default NewMain;

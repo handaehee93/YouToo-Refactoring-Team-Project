@@ -27,22 +27,23 @@ const auth = getAuth(app);
 
 const db = getDatabase(app);
 
-function writeUserData(userId:string, email:any) {
+function writeUserData(userId:string, email:any,nickname:string) {
   set(ref(db, `users/${userId}`), {
     // username: name,
-    userEmail: email
+    userEmail: email,
+    userNickname: nickname
     // profile_picture : imageUrl
   });
 }
 
 // 회원 가입 함수
-export function   signUp (email:any, password:string) {
+export function   signUp (email:any, password:string,nickname:string) {
   createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
 
     const user = userCredential.user;
     console.log(user.uid, user.email)
-    writeUserData(user.uid, user.email )
+    writeUserData(user.uid, user.email ,nickname)
     return
   })
   // .then((data) => {console.log(data)})
@@ -68,23 +69,31 @@ export async function userLogin (email:any, password:string) {
   });
 }
 
-
+function use (user:any) {
+  return user
+}
 
 // userstate
-export async function userState () {
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-      const uid = user.uid;
-      console.log(user)
-      return user
-      // ...
-    } else {
-      // User is signed out
-      // ...
-    }
-  });
+export  async function userState (callback:any) {
+  return onAuthStateChanged(auth,  async (user:any) => {
+    callback(user)
+    // console.log(user.email)
+    // return user.email
+    // if (user) {
+    //   // User is signed in, see docs for a list of available properties
+    //   // https://firebase.google.com/docs/reference/js/firebase.User
+    //   const uid = user.uid;
+    //   const userEmail = user.email
+    //     cb(user)
+    //   // console.log(user.email)
+      
+    //   // ...
+    // } else {
+    //   // User is signed out
+    //   // ...
+    // }
+  })
+  
 }
 
 // 데이터 post하는 함수
@@ -139,4 +148,17 @@ return get(ref(db, `diarys`))
 .catch((error) => {
   console.error(error);
 });
+}
+
+
+export async function getUserData (uid:string):Promise<string[]|undefined> {
+  return get(ref(db,`users/${uid}`))
+  .then((snapshot) => {
+    if (snapshot.exists()) {
+      // console.log(snapshot.val());
+      return Object.values(snapshot.val())
+    } else {
+      console.log("No data available");
+    }
+  })
 }

@@ -3,10 +3,12 @@ import { RootState } from '../store/store'
 
 export interface UserType {
   isLogin: boolean
+  usernickname:string
 }
 
 const initialState:UserType = {
-  isLogin: false
+  isLogin: false,
+  usernickname:''
 }
 
 export const loginSlice = createSlice({
@@ -14,6 +16,7 @@ export const loginSlice = createSlice({
   initialState,
   reducers: {
     logined: (state) => {
+      console.log('state,',state.usernickname)
       state.isLogin = true
     }
   }

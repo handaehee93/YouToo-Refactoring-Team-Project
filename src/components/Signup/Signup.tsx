@@ -141,7 +141,7 @@ function Signup() {
   const onSubmit: SubmitHandler<FormValue> = (data) => {
     console.log(data)
     // const password = parseInt(data.password)
-    signUp(data.email, data.password)
+    signUp(data.email, data.password,data.nickname)
     navigate("/login");
     // BASE_API.post(`/users/sign-up`, {
     //   nickname: data.nickname,
@@ -166,7 +166,7 @@ function Signup() {
         <Link to='/'>나만의 작은 음악 다이어리</Link>
       </Logo>
       <FormContainer>
-        {/* <NicknameInput placeholder='닉네임' {...register("nickname")} /> */}
+        <NicknameInput placeholder='닉네임' {...register("nickname")} />
         <EmailInput type='email' placeholder='이메일' {...register("email")} />
         <PasswordInput type='password' placeholder='비밀번호' {...register("password")} />
         <SignupButton type='button' onClick={handleSubmit(onSubmit)}>
