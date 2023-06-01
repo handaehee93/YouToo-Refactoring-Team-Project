@@ -9,7 +9,8 @@ import NewPlayList from "./NewPlayList";
 import { myContext } from "../../theme";
 import { PlaylistData } from "../../util/Type";
 import { getUserData, userState } from '../../firebase';
-
+import { v4 as uuidv4 } from 'uuid';
+import { writeDiaryData } from '../../firebase';
 
 
 function NewMain():any {
@@ -24,7 +25,7 @@ function NewMain():any {
   
   const today: string = new Date().toISOString().substring(0, 10);
   
-  console.log(nickname[1])
+  // console.log(nickname[1])
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
       // .then((res) => console.log('uid',res))
@@ -34,17 +35,23 @@ function NewMain():any {
     getUserData(userUid)
       .then(res => setNickname(res))
   },[])
+  // console.log(userUid)
+  const uuid = uuidv4()
   // 다이어리 post 요청
-  const submitHandler = async () => {
-    const newDiary = {
-      title: newTitle,
-      body: newBody,
-      playlists: newPlayList,
-    };
-    await TOKEN_API.post(`/diary`, newDiary);
-    navigate(`/`);
+  const submitHandler =  () => {
+    console.log(userUid)
+    writeDiaryData(userUid,newTitle,newBody,newPlayList)
+    // const newDiary = {
+    //   title: newTitle,
+    //   body: newBody,
+    //   playlists: newPlayList,
+    // };
+    // await TOKEN_API.post(`/diary`, newDiary);
+    // navigate(`/`);
   };
 
+  
+  
   // 제목 수정 체인지 이벤트
   const changeNewTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTitle(e.target.value);
@@ -59,13 +66,16 @@ function NewMain():any {
   const getVideoId = (url: string) => {
     if (url.indexOf("/watch") > -1) {
       const arr = url.replaceAll(/=|&/g, "?").split("?");
-      return arr[arr.indexOf("v") + 1];
+      const id = arr[arr.indexOf("v") + 1];
+      return id
     } else if (url.indexOf("/youtu.be") > -1) {
       const arr = url.replaceAll(/=|&|\//g, "?").split("?");
-      return arr[arr.indexOf("youtu.be") + 1];
+      const id2 = arr[arr.indexOf("youtu.be") + 1];
+      return id2
     } else {
       return "none";
     }
+    
   };
 
   // input에 등록한 Url 정보 불러옴
@@ -74,6 +84,7 @@ function NewMain():any {
       const res =
         await axios.get(`https://www.googleapis.com/youtube/v3/videos?id=${id}&key=${process.env.REACT_APP_YOUTUBE_API_KEY}
       &part=snippet`);
+      console.log('res',res)
       return res.data.items[0]?.snippet;
     } catch (err) {
       console.error(err);
@@ -84,7 +95,7 @@ function NewMain():any {
   const addPlayList = () => {
     const musicInfo: PlaylistData = {};
     const urlId = getVideoId(newUrl);
-
+    // console.log(urlId)
     getYoutubeData(urlId)
       .then((res) => {
         musicInfo.channelId = res.channelId;
@@ -112,7 +123,7 @@ function NewMain():any {
             placeholder='제목을 입력하세요'
             onChange={changeNewTitle}
           />
-          <SubmitButton onClick={submitHandler} disabled={newTitle.length === 0}>
+          <SubmitButton onClick={() => writeDiaryData(userUid,newTitle,newBody,newPlayList)} disabled={newTitle.length === 0}>
             등록하기
           </SubmitButton>
         </TitleArea>
@@ -121,7 +132,7 @@ function NewMain():any {
           <InfoArea>
             <UserInfo>
               <span className='text'>등록자</span>
-              {nick}
+              {/* {nick} */}
               {/* {nickname[1]} */}
               {/* {currentUser.nickname} */}
             </UserInfo>
@@ -151,7 +162,7 @@ function NewMain():any {
               추가
             </button>
           </UrlInput>
-          {/* {newPlayList?.map((value, index) => {
+          {newPlayList?.map((value, index) => {
             return (
               <NewPlayList
                 list={value}
@@ -160,7 +171,7 @@ function NewMain():any {
                 setNewPlayList={setNewPlayList}
               />
             );
-          })} */}
+          })}
         </PlayListArea>
       </MainWrapper>
     </MainContainer>

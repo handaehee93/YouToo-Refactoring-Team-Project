@@ -97,17 +97,17 @@ export  async function userState (callback:any) {
 }
 
 // 데이터 post하는 함수
-export function writeDiaryData(userId:any) {
+export function writeDiaryData(userId:any,title:string, body:string, playlists:any) {
   set(ref(db, 'diarys/' + userId), {
-      diaryId: 2,
-      title: "테스트",
-      body: "테스트",
+      diaryId: userId,
+      title: title,
+      body: body,
       viewCount: 2,
       likeCount: 2,
       createdAt: "2023-02-22T07:14:00",
       modifiedAt: "2023-02-22T07:14:00",
       userNickname: "한대희",
-
+      playlists:playlists
   });
 }
 export function writeComment(userId:any) {
