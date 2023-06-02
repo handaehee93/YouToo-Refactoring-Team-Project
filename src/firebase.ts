@@ -29,30 +29,30 @@ const db = getDatabase(app);
 
 function writeUserData(userId:string, email:any,nickname:string) {
   set(ref(db, `users/${userId}`), {
-    // username: name,
     userEmail: email,
     userNickname: nickname
-    // profile_picture : imageUrl
   });
 }
 
-// 회원 가입 함수
-export function   signUp (email:any, password:string,nickname:string) {
-  createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
 
+
+// 회원 가입 함수
+export async function  signUp (email:string, password:any,nickname:string) {
+  return createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
     const user = userCredential.user;
     console.log(user.uid, user.email)
     writeUserData(user.uid, user.email ,nickname)
-    return
+    return user
   })
-  // .then((data) => {console.log(data)})
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
+    return errorMessage
   });
-
 }
+
+
 
 // 로그인 함수
 export async function userLogin (email:any, password:string) {
@@ -69,9 +69,7 @@ export async function userLogin (email:any, password:string) {
   });
 }
 
-function use (user:any) {
-  return user
-}
+
 
 // userstate
 export  async function userState (callback:any) {
@@ -97,36 +95,36 @@ export  async function userState (callback:any) {
 }
 
 // 데이터 post하는 함수
-export function writeDiaryData(userId:any,title:string, body:string, playlists:any) {
+export function writeDiaryData(userId:any,title:string, body:string, playlists:any, today:string) {
   set(ref(db, 'diarys/' + userId), {
       diaryId: userId,
       title: title,
       body: body,
-      viewCount: 2,
-      likeCount: 2,
-      createdAt: "2023-02-22T07:14:00",
+      viewCount: 0,
+      likeCount: 0,
+      createdAt: today,
       modifiedAt: "2023-02-22T07:14:00",
       userNickname: "한대희",
-      playlists:playlists
+      playlists:playlists,
+      comments: {
+        commentId: userId + 1,
+        diaryId: userId,
+        body: "",
+        createdAt: "",
+        modifiedAt: "",
+        userNickname: '한대희'
+      }
   });
 }
 export function writeComment(userId:any) {
-  set(ref(db, 'diarys/' + userId), {
-    diaryId: 2,
-    title: "테스트",
-    body: "테스트",
-    viewCount: 2,
-    likeCount: 2,
-    createdAt: "2023-02-22T07:14:00",
-    modifiedAt: "2023-02-22T07:14:00",
-    userNickname: "한대희",
+  set(ref(db,`diarys/${userId}`), {
     comments:  {
-      "commentId": 8,
-      "diaryId": 2,
-      "body": "댓글 수정 테스트트",
+      "commentId": userId + 1,
+      "diaryId": userId,
+      "body": "댓글 등록",
       "createdAt": "2023-03-22T11:00:00",
       "modifiedAt": "2023-03-22T11:03:00",
-      "userNickname": null
+      "userNickname": '한대희'
   }
 });
 }

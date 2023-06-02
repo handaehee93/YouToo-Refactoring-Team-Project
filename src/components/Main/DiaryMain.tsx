@@ -74,21 +74,25 @@ function DiaryMain() {
 
   // 전체 diary 데이터 get 요청
   // /diary
-  const getDiaryData = async () => {
-    // getData()
-    //   .then((data)=> {
-    //     // console.log(data)
-    //     setDiaryData(data)
-    //   })
-    // try {
-    //   const res = await BASE_API.get(`http://ec2-15-164-230-157.ap-northeast-2.compute.amazonaws.com:8080`);
-    //   setDiaryData(res.data);
-    // } catch (err) {
-    //   console.error(err);
-    // }
-  };
+  // const getDiaryData = async () => {
+  //   getData()
+  //     .then((data:any)=> setDiaryData(data))
+
+  //   getData()
+  //     .then((data)=> {
+  //       console.log(data)
+  //       setDiaryData(data)
+  //     })
+  //   try {
+  //     const res = await BASE_API.get(`http://ec2-15-164-230-157.ap-northeast-2.compute.amazonaws.com:8080`);
+  //     setDiaryData(res.data);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
   useEffect(() => {
-    getDiaryData();
+    getData()
+    .then((data:any)=> setDiaryData(data))
   }, []);
 
   // 태그 리스트
@@ -109,16 +113,16 @@ function DiaryMain() {
     setCurrentTab(index);
   };
 
-  console.log(diaryData);
+  // console.log(diaryData);
 
   return (
     <main>
       <ListTab>
         {/* <button onClick={()=> {writeDiaryData(2)}}>ddd</button> */}
-        <button onClick={() => {getData().then((data:any)=> {
+        {/* <button onClick={() => {getData().then((data:any)=> {
           setDiaryData(data)
-          console.log(data)})}}>getdata</button>
-          <button onClick={() => {writeComment(8)}}>addComment</button>
+          console.log(data)})}}>getdata</button> */}
+          {/* <button onClick={() => {writeComment(8)}}>addComment</button> */}
         {tagArr.map((tab, index) => {
           return (
             <li

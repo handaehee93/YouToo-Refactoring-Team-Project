@@ -30,25 +30,25 @@ function NewMain():any {
     userState((user:any) => setUserUid(user.uid))
       // .then((res) => console.log('uid',res))
   },[])
-  const nick = nickname[1]
+
   useEffect(() => {
     getUserData(userUid)
       .then(res => setNickname(res))
   },[])
-  // console.log(userUid)
-  const uuid = uuidv4()
+  console.log(nickname)
+
   // 다이어리 post 요청
-  const submitHandler =  () => {
-    console.log(userUid)
-    writeDiaryData(userUid,newTitle,newBody,newPlayList)
-    // const newDiary = {
-    //   title: newTitle,
-    //   body: newBody,
-    //   playlists: newPlayList,
-    // };
-    // await TOKEN_API.post(`/diary`, newDiary);
-    // navigate(`/`);
-  };
+  // const submitHandler =  () => {
+  //   console.log(userUid)
+  //   writeDiaryData(userUid,newTitle,newBody,newPlayList)
+  //   const newDiary = {
+  //     title: newTitle,
+  //     body: newBody,
+  //     playlists: newPlayList,
+  //   };
+  //   await TOKEN_API.post(`/diary`, newDiary);
+  //   navigate(`/`);
+  // };
 
   
   
@@ -123,7 +123,7 @@ function NewMain():any {
             placeholder='제목을 입력하세요'
             onChange={changeNewTitle}
           />
-          <SubmitButton onClick={() => writeDiaryData(userUid,newTitle,newBody,newPlayList)} disabled={newTitle.length === 0}>
+          <SubmitButton onClick={() => writeDiaryData(userUid,newTitle,newBody,newPlayList, today)} disabled={newTitle.length === 0}>
             등록하기
           </SubmitButton>
         </TitleArea>

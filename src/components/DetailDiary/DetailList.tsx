@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import CommentList from "./CommentList";
 import DetailPlayList from "./DetailPlayList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DiaryData, DiaryData2 } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
@@ -10,15 +10,22 @@ import { RiErrorWarningLine } from "react-icons/ri";
 import DOMPurify from "dompurify";
 import { useContext } from "react";
 import { myContext } from "../../theme";
+import { userState, writeComment } from '../../firebase';
 
 
-
+// commentId
 interface DiaryDataPropss {
   list: DiaryData2;
   getDetailData: React.Dispatch<React.SetStateAction<object>>;
 }
 // commentId
 function DetailList({ list, getDetailData }: DiaryDataPropss) {
+  const [userUid, setUserUid] = useState('')
+  
+  useEffect(() => {
+    userState((user:any) => setUserUid(user.uid))
+      // .then((res) => console.log('uid',res))
+  },[])
   const [checkLike, setCheckLike] = useState<boolean>(false);
   const [commentBody, setCommentBody] = useState<string>("");
   const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
@@ -82,13 +89,14 @@ function DetailList({ list, getDetailData }: DiaryDataPropss) {
 
   // 댓글 post 요청
   const submitHandler = async () => {
-    const newComment = {
-      diaryId: diaryId,
-      body: commentBody,
-    };
-    const res = await TOKEN_API.post(`/comment`, newComment);
-    getDetailData(res.data);
-    setCommentBody("");
+    writeComment(userUid)
+    // const newComment = {
+    //   diaryId: diaryId,
+    //   body: commentBody,
+    // };
+    // const res = await TOKEN_API.post(`/comment`, newComment);
+    // getDetailData(res.data);
+    // setCommentBody("");
   };
 
   // 댓글 작성 체인지 이벤트
@@ -167,7 +175,7 @@ function DetailList({ list, getDetailData }: DiaryDataPropss) {
           </ButtonArea>
         </TitleArea>
         <AlbumCoverArea>
-          {/* <img className='coverImg' src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' /> */}
+          <img className='coverImg' src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
           <InfoArea>
             <UserInfo>
               <span className='text'>등록자</span>
@@ -232,10 +240,10 @@ function DetailList({ list, getDetailData }: DiaryDataPropss) {
               등록
             </button>
           </TextArea>
-          {commentData?.map((value) => {
+          {/* {commentData?.map((value) => {
             console.log('value', value)
             return <CommentList list={value} key={value.commentId} getDetailData={getDetailData} />;
-          })}
+          })} */}
         </CommentInputArea>
       </DetailMainWrapper>
     </DetailMainContainer>

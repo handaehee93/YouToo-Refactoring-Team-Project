@@ -1,3 +1,5 @@
+import { Play } from '../components/Main/DiaryList';
+
 export interface DiaryData {
   diaryId: number;
   title: string;
@@ -12,7 +14,7 @@ export interface DiaryData {
   tag: string[];
 }
 export interface DiaryData2 {
-  diaryId: number;
+  diaryId: string;
   title: string;
   body: string;
   viewCount: number;
@@ -21,7 +23,7 @@ export interface DiaryData2 {
   modifiedAt: string;
   userNickname: string;
   comments: CommentData;
-  // playlists: PlaylistData[];
+  playlists: Play[];
   // tag: string[];
 }
 export interface DiaryDataProps {

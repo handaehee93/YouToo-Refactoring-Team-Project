@@ -1,9 +1,10 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CommentData2 } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
 import { useContext } from "react";
 import { myContext } from "../../theme";
+import { getUserData, userState, writeComment } from '../../firebase';
 
 const CommentListContainer = styled.li`
   display: flex;
@@ -165,6 +166,16 @@ interface CommentDataPropss {
 }
 
 function CommentList({ list, getDetailData }: CommentDataPropss) {
+  const [userUid, setUserUid] = useState('')
+  
+  useEffect(() => {
+    userState((user:any) => setUserUid(user.uid))
+      // .then((res) => console.log('uid',res))
+  },[])
+  // useEffect(() => {
+  //   getUserData(userUid)
+  //     .then(res => setNickname(res))
+  // },[])
   console.log('list', list.body)
   // const objList = Object.fromEntries(list) 
   const [commentContent, setCommentContent] = useState(list.body);
@@ -176,16 +187,17 @@ function CommentList({ list, getDetailData }: CommentDataPropss) {
 
   // 댓글 patch 요청
   const changeComment = async () => {
-    const newComment = {
-      diaryId: list.diaryId,
-      commentId: list.commentId,
-      body: commentContent,
-    };
-    const res = await TOKEN_API.patch(`/comment/${list.commentId}`, newComment);
-    getDetailData(res.data);
-    setClick(false);
+    writeComment(userUid)
+    // const newComment = {
+    //   diaryId: list.diaryId,
+    //   commentId: list.commentId,
+    //   body: commentContent,
+    // };
+    // const res = await TOKEN_API.patch(`/comment/${list.commentId}`, newComment);
+    // getDetailData(res.data);
+    // setClick(false);
   };
-
+  
   // 댓글 delete 요청
   const commentDelete = async () => {
     const res = await TOKEN_API.delete(`/comment/${list.commentId}`);

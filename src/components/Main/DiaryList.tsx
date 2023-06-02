@@ -4,19 +4,38 @@ import { DiaryDataProps, DiaryDataProps2 } from "../../util/Type";
 import { AiFillHeart } from "react-icons/ai";
 import { FaRegCommentDots } from "react-icons/fa";
 
-
-
-function DiaryList({ list }: DiaryDataProps2) {
+interface Propss {
+  body:string;
+  createdAt:string;
+  diaryId:string;
+  likeCount:number;
+  modifiedAt:string;
+  playlists:Play[]
+  title:string;
+  userNickname:string;
+  viewCount:number
+}
+export interface Play {
+  channelId:string;
+  thumbnail:string;
+  title:string;
+  url:string
+}
+interface test {
+  list:Propss
+}
+// DiaryDataProps2
+function DiaryList({ list }:test) {
   const navigate = useNavigate();
 
   // 디테일 페이지로 이동
   const moveDetailDiary = () => {
     navigate(`/DetailDiary/${list.diaryId}`,{state: {list:list}});
   };
-
+  console.log(list.playlists)
   return (
     <DiaryListContainer onClick={moveDetailDiary}>
-      {/* <Thumbnail src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' /> */}
+      <Thumbnail src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
       <InfoArea>
         <div className='infoTitle'>{list.title}</div>
         <div className='infoDate'>{list.createdAt.substring(0, 10)}</div>

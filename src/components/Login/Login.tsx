@@ -5,7 +5,7 @@ import { useState } from "react";
 import { BASE_API } from "../../util/API";
 import { userLogin } from '../../firebase';
 import { useAppDispatch } from '../../redux/store/hooks';
-import { logined } from '../../redux/slice/LoginSlice';
+import { loginSlice, logined } from '../../redux/slice/LoginSlice';
 
 const LoginContainer = styled.div`
   height: 100vh;
@@ -139,7 +139,9 @@ function Login() {
       .then(user => {
         if(user) {
           navigate('/')
-          dispatch(logined())
+          // dispatch(logined())
+          dispatch(logined(user))
+          // dispatch(loginSlice.actions.login())
         }
       })
     // BASE_API.post(`/auth/login`, {
