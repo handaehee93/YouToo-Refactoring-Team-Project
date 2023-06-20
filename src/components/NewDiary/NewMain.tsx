@@ -7,11 +7,18 @@ import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import NewPlayList from "./NewPlayList";
 import { myContext } from "../../theme";
-import { PlaylistData } from "../../util/Type";
-import { getUserData, userState } from '../../firebase';
+import { DiaryData, PlaylistData } from "../../util/Type";
+import { getUidData, getUserData, userState } from '../../firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { writeDiaryData } from '../../firebase';
+import { useAppSelector } from '../../redux/store/hooks';
+import { selectLogin } from '../../redux/slice/LoginSlice';
+import { RootState } from '../../redux/store/store';
+import { getuid } from 'process';
 
+interface Post  {
+  title: string
+}
 
 function NewMain():any {
   const [newTitle, setNewTitle] = useState<string>("");
@@ -19,37 +26,27 @@ function NewMain():any {
   const [newPlayList, setNewPlayList] = useState<PlaylistData[]>([]);
   const [newUrl, setNewUrl] = useState<string>("");
   const [userUid, setUserUid] =useState<string>('')
-  const [nickname, setNickname] = useState<string[] | any>([])
+  const [nickname, setNickname] = useState<string>('')
+  const [uidData, setUidData] = useState({})
   const navigate = useNavigate();
-  const { currentUser }: any = useContext(myContext);
-  
   const today: string = new Date().toISOString().substring(0, 10);
-  
-  // console.log(nickname[1])
+  const nickName = useAppSelector(selectLogin);
+
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
-      // .then((res) => console.log('uid',res))
+    setNickname(nickName && nickName)
   },[])
 
-  useEffect(() => {
-    getUserData(userUid)
-      .then(res => setNickname(res))
-  },[])
-  console.log(nickname)
 
-  // 다이어리 post 요청
-  // const submitHandler =  () => {
-  //   console.log(userUid)
-  //   writeDiaryData(userUid,newTitle,newBody,newPlayList)
-  //   const newDiary = {
-  //     title: newTitle,
-  //     body: newBody,
-  //     playlists: newPlayList,
-  //   };
-  //   await TOKEN_API.post(`/diary`, newDiary);
-  //   navigate(`/`);
-  // };
 
+  getUidData(userUid && userUid)
+  .then(res =>{
+    console.log('res',res)
+    // const ss = res?.slice(0,10)
+    // console.log(ss && ss)
+  })
+
+console.log(uidData)
   
   
   // 제목 수정 체인지 이벤트
@@ -78,7 +75,7 @@ function NewMain():any {
     
   };
 
-  // input에 등록한 Url 정보 불러옴
+  // 필터링 된 id를 이용하여 등록한 Url 정보 불러옴
   const getYoutubeData = async (id: any) => {
     try {
       const res =
@@ -120,10 +117,11 @@ function NewMain():any {
           <input
             className='inputTitle'
             type='text'
+            // value={postDiary && postDiary.title }
             placeholder='제목을 입력하세요'
             onChange={changeNewTitle}
           />
-          <SubmitButton onClick={() => writeDiaryData(userUid,newTitle,newBody,newPlayList, today)} disabled={newTitle.length === 0}>
+          <SubmitButton onClick={() => writeDiaryData(userUid,newTitle,newBody,newPlayList, today, nickname, uidData)} disabled={newTitle.length === 0}>
             등록하기
           </SubmitButton>
         </TitleArea>
@@ -132,9 +130,7 @@ function NewMain():any {
           <InfoArea>
             <UserInfo>
               <span className='text'>등록자</span>
-              {/* {nick} */}
-              {/* {nickname[1]} */}
-              {/* {currentUser.nickname} */}
+              {nickname && nickname}
             </UserInfo>
             <UserInfo>
               <span className='text'>등록일</span>
@@ -348,3 +344,18 @@ export const UrlInput = styled.div`
     }
   }
 `;
+
+  // console.log('nickname',nickname)
+
+  // 다이어리 post 요청
+  // const submitHandler =  () => {
+  //   console.log(userUid)
+  //   writeDiaryData(userUid,newTitle,newBody,newPlayList)
+  //   const newDiary = {
+  //     title: newTitle,
+  //     body: newBody,
+  //     playlists: newPlayList,
+  //   };
+  //   await TOKEN_API.post(`/diary`, newDiary);
+  //   navigate(`/`);
+  // };

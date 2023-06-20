@@ -8,9 +8,9 @@ import { useAppSelector } from '../redux/store/hooks';
 import { selectLogin } from '../redux/slice/LoginSlice';
 
 function Main() {
-  const { isLogin }: any = useContext(myContext);
+  // const { isLogin }: any = useContext(myContext);
   const LOGIN = useAppSelector(selectLogin);
-
+  // console.log(LOGIN)
   return (
     <>
       {LOGIN? <LoginHeader /> : <LogoutHeader />}

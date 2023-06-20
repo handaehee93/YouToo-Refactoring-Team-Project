@@ -1,5 +1,5 @@
 import * as NewMain from "../NewDiary/NewMain";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DiaryDataProps } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
@@ -8,8 +8,14 @@ import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import EditPlayList from "./EditPlayList";
 import { PlaylistData } from "../../util/Type";
+import { getUidData, getUserData, userState } from '../../firebase';
+import { useAppSelector } from '../../redux/store/hooks';
+import { selectLogin } from '../../redux/slice/LoginSlice';
 
 function EditList({ list }: DiaryDataProps) {
+  const [userUid, setUserUid] = useState('')
+  console.log('수정',list)
+
   const [editTitle, setEditTitle] = useState<string>(list.title);
   const [editBody, setEditBody] = useState<string>(list.body);
   const [editPlayList, setEditPlayList] = useState<PlaylistData[]>(list.playlists);
@@ -17,6 +23,13 @@ function EditList({ list }: DiaryDataProps) {
 
   const navigate = useNavigate();
   const { diaryId } = useParams();
+
+  // getUserData
+  useEffect(() => {
+    userState((user:any) => setUserUid(user.uid))
+  },[])
+  console.log(userUid)
+
 
   // 다이어리 patch 요청
   const submitHandler = async () => {

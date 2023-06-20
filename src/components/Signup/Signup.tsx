@@ -1,11 +1,8 @@
 import styled from "styled-components";
-import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { BASE_API } from "../../util/API";
 import {signUp}  from '../../firebase';
-import { v4 as uuidv4 } from 'uuid';
-import { toast, ToastContainer } from "react-toastify";
+
 
 
 interface FormValue {
@@ -24,6 +21,7 @@ function Signup() {
     formState: { errors },
   } = useForm<FormValue>();
 
+  // 회원 가입 버튼 클릭시 실행될 함수
   const onSubmit: SubmitHandler<FormValue> = (data) => {
     const {email, password, nickname} = data
     signUp(email, password, nickname)
@@ -44,7 +42,7 @@ function Signup() {
       </Logo>
 
       <FormContainer>
-        <NicknameInput placeholder='닉네임' {...register("nickname", {
+        <NicknameInput type='text' placeholder='닉네임' {...register("nickname", {
           required: "닉네임을 입력해 주세요.",
           maxLength: { 
             value: 10, 

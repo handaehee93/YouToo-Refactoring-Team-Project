@@ -1,70 +1,51 @@
+import React from 'react'
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { DiaryData, DiaryDataProps, DiaryDataProps2 } from "../../util/Type";
 import { AiFillHeart } from "react-icons/ai";
 import { FaRegCommentDots } from "react-icons/fa";
-import DiaryCard from './DiaryCard';
-import { v4 as uuidv4 } from 'uuid';
-
 
 interface Props {
-  list: DiaryData[]
+  list: DiaryData
+  listUid:string
 }
-function DiaryList({ list }:DiaryDataProps) {
+export default function DiaryCard({ list, listUid }: Props) {
+  
   const navigate = useNavigate();
-  const arr = Array(list)
-  // console.log('arr',arr)
-  const list2 = Object.values(list)
-  const listUid = Object.keys(list)
-
-  // console.log('DiaryMain에서 props로 전달한 데이터',list)
-  console.log('DiaryMain에서 props로 전달한 데이터의 value',list2)
-  console.log('DiaryMain에서 props로 전달한 데이터의 키',listUid)
-
+  console.log('다이어리카드의 ', listUid)
+  
+  const moveDetailDiary = () => {
+    navigate(`/DetailDiary/${list.diaryId}`,{state: {list, listUid}});
+  };
+  
   return (
-    <>
-      {
-        list2 && list2.map((list1,idx) => { 
-          return <DiaryCard list={list1} key={list1.diaryId} listUid={listUid[idx]}/>
-        })
-      }
-      {/* {
-        list2.map((list1) => {
-          return listUid.map((uid,idx) => {
-            return <DiaryCard list={list1} listUid={uid} key={list1.diaryId}/>
-          })
-        })
-      } */}
-    </>
-    // <DiaryListContainer onClick={moveDetailDiary}>
-    //   <Thumbnail src={list.playlists && list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
-    //   <InfoArea>
-    //     <div className='infoTitle'>{list.title}</div>
-    //     {/* <div className='infoDate'>{list.createdAt.substring(0, 10)}</div> */}
-    //     {/* <Tag>
-    //       {list.tag.map((value: string, index: number) => {
-    //         return <li key={index}>{value}</li>;
-    //       })}
-    //     </Tag> */}
-    //   </InfoArea>
-    //   <UserArea>
-    //     <ByUsername>
-    //       <Profile />
-    //       <div className='by'>by</div>
-    //       {list.userNickname}
-    //     </ByUsername>
-    //     <LikeAndComment>
-    //       <AiFillHeart className='likeIcon' size={16} />
-    //       {list.likeCount}
-    //       <FaRegCommentDots className='commentIcon' size={15} />
-    //       {/* {list.comments.length} */}
-    //     </LikeAndComment>
-    //   </UserArea>
-    // </DiaryListContainer>
-  );
+    <DiaryListContainer onClick={moveDetailDiary}>
+      <Thumbnail src={list.playlists && list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
+      <InfoArea>
+        <div className='infoTitle'>{list.title}</div>
+        <div className='infoDate'>{list.createdAt.substring(0, 10)}</div>
+        {/* <Tag>
+          {list.tag.map((value: string, index: number) => {
+            return <li key={index}>{value}</li>;
+          })}
+        </Tag> */}
+      </InfoArea>
+      <UserArea>
+        <ByUsername>
+          <Profile />
+          <div className='by'>by</div>
+          {list.userNickname}
+        </ByUsername>
+        <LikeAndComment>
+          <AiFillHeart className='likeIcon' size={16} />
+          {list.likeCount}
+          <FaRegCommentDots className='commentIcon' size={15} />
+          {/* {list.comments.length} */}
+        </LikeAndComment>
+      </UserArea>
+    </DiaryListContainer>
+  )
 }
-
-export default DiaryList;
 
 
 export const DiaryListContainer = styled.li`

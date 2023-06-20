@@ -3,98 +3,23 @@ import Pagination from "./Pagination";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { DiaryData, DiaryData2 } from "../../util/Type";
-import { BASE_API } from "../../util/API";
 import { getData, writeComment, writeDiaryData } from '../../firebase';
 
-const ListTab = styled.ul`
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  list-style: none;
-  margin-bottom: 50px;
-  gap: 10px;
 
-  .tab {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    width: 100px;
-    height: 40px;
-    border-radius: 50px;
-    text-align: center;
-    padding: 7px 7px;
-    border: 1px solid ${(props) => props.theme.disabledTagBorder};
-    background-color: ${(props) => props.theme.disabledTagBackground};
-    transition: 0.2s ease-in-out;
-    cursor: pointer;
-
-    &:hover {
-      transform: scale(1.03);
-    }
-
-    > .el {
-      color: ${(props) => props.theme.disabledTagColor};
-    }
-  }
-
-  .focused {
-    border: 1px solid ${(props) => props.theme.mainColor};
-    background-color: ${(props) => props.theme.mainColor};
-
-    > .el {
-      color: ${(props) => props.theme.TagColor};
-      font-weight: 600;
-    }
-  }
-`;
-
-const DiaryMainContainer = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const DiaryMainWrapper = styled.ul`
-  width: 100vw;
-  max-width: 1440px;
-  min-width: 300px;
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 15px 0 15px;
-  gap: 56.6px;
-`;
 
 function DiaryMain() {
-  const [diaryData, setDiaryData] = useState<DiaryData2[]>([]); // 전체 diary 데이터
+  const [diaryData, setDiaryData] = useState<DiaryData[]>([]); // 전체 diary 데이터
   const [currentTab, setCurrentTab] = useState<number>(0); // 탭 이동 상태
   const [page, setPage] = useState<number>(1); // 현재 페이지 번호 (기본값: 1페이지부터 노출)
-
   const LIMIT_COUNT: number = 20;
   const offset: number = (page - 1) * LIMIT_COUNT; // 각 페이지에서 첫 데이터의 위치(index) 계산
 
-  // 전체 diary 데이터 get 요청
-  // /diary
-  // const getDiaryData = async () => {
-  //   getData()
-  //     .then((data:any)=> setDiaryData(data))
 
-  //   getData()
-  //     .then((data)=> {
-  //       console.log(data)
-  //       setDiaryData(data)
-  //     })
-  //   try {
-  //     const res = await BASE_API.get(`http://ec2-15-164-230-157.ap-northeast-2.compute.amazonaws.com:8080`);
-  //     setDiaryData(res.data);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
   useEffect(() => {
     getData()
     .then((data:any)=> setDiaryData(data))
   }, []);
-
+  console.log('다이어리 전체 데이터' ,diaryData)
   // 태그 리스트
   const tagArr = [
     { feel: "전체" },
@@ -113,8 +38,11 @@ function DiaryMain() {
     setCurrentTab(index);
   };
 
-  // console.log(diaryData);
-
+  // console.log('배열전체 데이터',diaryData);
+  // const diaryData2= diaryData.map((data) => {
+  //   const a =  Object.values(data)
+  //   setDiaryData3(a)
+  // })
   return (
     <main>
       <ListTab>
@@ -137,8 +65,8 @@ function DiaryMain() {
       </ListTab>
       <DiaryMainContainer>
         <DiaryMainWrapper>
-          {diaryData.slice(offset, offset + LIMIT_COUNT).map((value) => {
-            return <DiaryList list={value} key={value.diaryId} />;
+          {diaryData && diaryData.slice(offset, offset + LIMIT_COUNT).map((data) => {
+            return <DiaryList list={data} key={data.diaryId} />;
           })}
         </DiaryMainWrapper>
         {/* {currentTab === 0 ? (
@@ -222,7 +150,7 @@ function DiaryMain() {
         )} */}
       </DiaryMainContainer>
       <Pagination
-        allPageLength={diaryData.length}
+        allPageLength={diaryData ? diaryData.length : 0}
         // tagOnePageLength={
         //   diaryData.filter((value) => value.tag.includes(tagArr[1].feel)).length
         // }
@@ -257,3 +185,80 @@ function DiaryMain() {
 }
 
 export default DiaryMain;
+
+const ListTab = styled.ul`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  list-style: none;
+  margin-bottom: 50px;
+  gap: 10px;
+
+  .tab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    width: 100px;
+    height: 40px;
+    border-radius: 50px;
+    text-align: center;
+    padding: 7px 7px;
+    border: 1px solid ${(props) => props.theme.disabledTagBorder};
+    background-color: ${(props) => props.theme.disabledTagBackground};
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.03);
+    }
+
+    > .el {
+      color: ${(props) => props.theme.disabledTagColor};
+    }
+  }
+
+  .focused {
+    border: 1px solid ${(props) => props.theme.mainColor};
+    background-color: ${(props) => props.theme.mainColor};
+
+    > .el {
+      color: ${(props) => props.theme.TagColor};
+      font-weight: 600;
+    }
+  }
+`;
+
+const DiaryMainContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const DiaryMainWrapper = styled.ul`
+  width: 100vw;
+  max-width: 1440px;
+  min-width: 300px;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 15px 0 15px;
+  gap: 56.6px;
+`;
+
+  // 전체 diary 데이터 get 요청
+  // /diary
+  // const getDiaryData = async () => {
+  //   getData()
+  //     .then((data:any)=> setDiaryData(data))
+
+  //   getData()
+  //     .then((data)=> {
+  //       console.log(data)
+  //       setDiaryData(data)
+  //     })
+  //   try {
+  //     const res = await BASE_API.get(`http://ec2-15-164-230-157.ap-northeast-2.compute.amazonaws.com:8080`);
+  //     setDiaryData(res.data);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };

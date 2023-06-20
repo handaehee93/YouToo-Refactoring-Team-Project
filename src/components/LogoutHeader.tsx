@@ -7,6 +7,44 @@ import mainIcon from "../util/img/mainIcon.png";
 import { useAppSelector } from '../redux/store/hooks';
 // import { selectCount } from '../redux/slice/LoginSlice';
 
+
+
+function LogoutHeader() {
+  const { isChange, changeMode }: any = useContext(myContext);
+  return (
+    <HeaderContainer>
+      <HeaderWrapper>
+        <Logo>
+          <Link to='/'>
+            {" "}
+            <img src={mainIcon} alt='mainIcon' />
+            나만의 작은 음악 다이어리
+          </Link>
+        </Logo>
+        <div className='buttonArea'>
+          <ModeButton onClick={changeMode}>
+            {isChange === "dark" ? (
+              <BsFillMoonStarsFill className='darkIcon' size={20} />
+            ) : (
+              <BsFillSunFill className='lightIcon' size={25} />
+            )}
+          </ModeButton>
+          <div className='buttonArea'>
+            <Link to='/Login'>
+              <SubmitButton>새 다이어리 등록</SubmitButton>
+            </Link>
+            <Link to='/Login'>
+              <LoginButton>로그인</LoginButton>
+            </Link>
+          </div>
+        </div>
+      </HeaderWrapper>
+    </HeaderContainer>
+  );
+}
+
+export default LogoutHeader;
+
 const HeaderContainer = styled.header`
   display: flex;
   justify-content: center;
@@ -89,41 +127,3 @@ const LoginButton = styled.button`
   margin: 0 10px 0 20px;
   cursor: pointer;
 `;
-
-function LogoutHeader() {
-  const { isChange, changeMode }: any = useContext(myContext);
-  // const LOGIN = useAppSelector(selectCount);
-  return (
-    <HeaderContainer>
-      {/* {LOGIN && <p>로그인 상태다</p>} */}
-      <HeaderWrapper>
-        <Logo>
-          <Link to='/'>
-            {" "}
-            <img src={mainIcon} alt='mainIcon' />
-            나만의 작은 음악 다이어리
-          </Link>
-        </Logo>
-        <div className='buttonArea'>
-          <ModeButton onClick={changeMode}>
-            {isChange === "dark" ? (
-              <BsFillMoonStarsFill className='darkIcon' size={20} />
-            ) : (
-              <BsFillSunFill className='lightIcon' size={25} />
-            )}
-          </ModeButton>
-          <div className='buttonArea'>
-            <Link to='/Login'>
-              <SubmitButton>새 다이어리 등록</SubmitButton>
-            </Link>
-            <Link to='/Login'>
-              <LoginButton>로그인</LoginButton>
-            </Link>
-          </div>
-        </div>
-      </HeaderWrapper>
-    </HeaderContainer>
-  );
-}
-
-export default LogoutHeader;

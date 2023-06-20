@@ -5,32 +5,17 @@ import { DiaryData, DiaryData2 } from "../../util/Type";
 import { BASE_API } from "../../util/API";
 
 function DetailMain() {
-  const [detailData, setDetailData] = useState<DiaryData2>();
+  const [detailData, setDetailData] = useState<DiaryData>();
 
   const { diaryId } = useParams();
   const {state: {
-    list:list
+    list, listUid
   }} = useLocation()
-  console.log(list)
+
   useEffect(() => {
-  setDetailData(list)
-
+    setDetailData(list)
   },[list])
-  console.log('main', list)
-  // 선택한 다이어리 get 요청
-  // const getDetailData = async () => {
-  //   try {
-  //     const res = await BASE_API.get(`/diary/${diaryId}`);
-  //     setDetailData(res.data);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getDetailData();
-  // }, []);
-
-  return <>{detailData && <DetailList list={detailData} getDetailData={() => {}} />};</>;
+  return <>{detailData && <DetailList list={detailData} getDetailData={() => {}} listUid={listUid}/>};</>;
 }
 
 export default DetailMain;

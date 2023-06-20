@@ -3,29 +3,36 @@ import CommentList from "./CommentList";
 import DetailPlayList from "./DetailPlayList";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { DiaryData, DiaryData2 } from "../../util/Type";
+import { DiaryData, DiaryData2, DiaryDataProps } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { RiErrorWarningLine } from "react-icons/ri";
 import DOMPurify from "dompurify";
 import { useContext } from "react";
 import { myContext } from "../../theme";
-import { userState, writeComment } from '../../firebase';
+import { getUserData, userState, writeComment } from '../../firebase';
+import { useAppSelector } from '../../redux/store/hooks';
+import { selectLogin } from '../../redux/slice/LoginSlice';
 
 
 // commentId
-interface DiaryDataPropss {
-  list: DiaryData2;
+interface Props {
+  list: DiaryData;
   getDetailData: React.Dispatch<React.SetStateAction<object>>;
+  listUid:string
 }
-// commentId
-function DetailList({ list, getDetailData }: DiaryDataPropss) {
+
+function DetailList({ list, getDetailData, listUid }: Props) {
   const [userUid, setUserUid] = useState('')
-  
+  const [currentUser, setCurrentUser] = useState()
+  console.log('디테일리스트에서 받아온 listUid',listUid)
+  // 페이지가 렌더링이 되면 userState함수가 실행이 되면서 user의 정보를 받아옴
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
-      // .then((res) => console.log('uid',res))
   },[])
+  console.log('uid',userUid)
+  
+  
   const [checkLike, setCheckLike] = useState<boolean>(false);
   const [commentBody, setCommentBody] = useState<string>("");
   const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
@@ -33,14 +40,27 @@ function DetailList({ list, getDetailData }: DiaryDataPropss) {
 
   const commentData = [list.comments]; // 선택한 다이어리의 코멘트 정보
   // const arrComment = Object.values(commentData)
-  console.log('commentDAta', commentData)
+  // console.log('commentDAta', commentData)
   // const playlistData = list.playlists; // 선택한 플레이리스트의 정보
 
   const { diaryId } = useParams();
   const navigate = useNavigate();
-  const { currentUser }: any = useContext(myContext);
-  const myDiary: boolean = list.userNickname === currentUser?.nickname;
+  // const { currentUser }: any = useContext(myContext);
+  useEffect(() => {
+    getUserData(userUid)
+    .then(res=> res?.map((us:any) => {
+      setCurrentUser(us)
+    }))
+  })
 
+  const myDiary: boolean = list.userNickname === currentUser
+  // const myDiary = true
+
+  
+  
+  
+  
+  
   // 좋아요 버튼
   const plusLikeCount = async () => {
     if (checkLike === false) {
@@ -124,7 +144,7 @@ function DetailList({ list, getDetailData }: DiaryDataPropss) {
 
   // 수정 페이지로 이동
   const moveEditDiary = () => {
-    navigate(`/EditDiary/${list.diaryId}`);
+    navigate(`/EditDiary/${list.diaryId}`,{state: {list}});
   };
 
   return (
@@ -133,7 +153,7 @@ function DetailList({ list, getDetailData }: DiaryDataPropss) {
         <TitleArea>
           <div className='DetailTitle'>{list.title}</div>
           <ButtonArea>
-            {myDiary === true ? (
+            {myDiary ? (
               <>
                 <button className='edit' onClick={moveEditDiary}>
                   수정
@@ -195,10 +215,10 @@ function DetailList({ list, getDetailData }: DiaryDataPropss) {
           ></div>
         </AlbumInfoArea>
         <PlayListArea>
-          <div className='playTitle'>다이어리 수록곡</div>
-          {/* {playlistData?.map((value, index) => {
+          <div className='playTitle'>유튜브 링크</div>
+          {list.playlists?.map((value, index) => {
             return <DetailPlayList list={value} key={index} />;
-          })} */}
+          })}
         </PlayListArea>
         <CommentInputArea>
           <div className='commentTitle'>
@@ -296,7 +316,7 @@ const ButtonArea = styled.div`
 
   > .edit {
     /* 다이어리 수정 오류 때문에 임시로 수정 버튼 숨김처리  */
-    display: none;
+    /* display: none; */
     width: 40px;
     color: ${(props) => props.theme.mainText};
     border: none;

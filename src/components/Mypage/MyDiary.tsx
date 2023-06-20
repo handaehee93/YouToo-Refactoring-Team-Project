@@ -41,7 +41,7 @@ function MyDiary({ list }: DiaryDataProps) {
               <AiFillHeart className='likeIcon' size={16} />
               {list.likeCount}
               <FaRegCommentDots className='commentIcon' size={15} />
-              {list.comments.length}
+              {/* {list.comments.length} */}
             </DiaryList.LikeAndComment>
           </DiaryList.UserArea>
         </DiaryList.DiaryListContainer>

@@ -1,9 +1,7 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-// import { getDatabase } from "firebase/database";
 import { getDatabase, ref, set, onValue, child, get } from "firebase/database";
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -21,27 +19,22 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
+
 
 const auth = getAuth(app);
-
 const db = getDatabase(app);
 
-function writeUserData(userId:string, email:any,nickname:string) {
-  set(ref(db, `users/${userId}`), {
-    userEmail: email,
-    userNickname: nickname
-  });
-}
+
+
 
 
 
 // 회원 가입 함수
-export async function  signUp (email:string, password:any,nickname:string) {
+export async function  signUp (email:string, password:string, nickname:string) {
   return createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     const user = userCredential.user;
-    console.log(user.uid, user.email)
+    console.log('유아이디',user.uid)
     writeUserData(user.uid, user.email ,nickname)
     return user
   })
@@ -52,21 +45,48 @@ export async function  signUp (email:string, password:any,nickname:string) {
   });
 }
 
+// 회원 가입시 user정보 db에 저장하는 함수
+function writeUserData(userUid:string, email:string|null, nickname:string) {
+  set(ref(db, `users/${userUid}`), {
+    userEmail: email,
+    userNickname: nickname
+  });
+}
 
 
 // 로그인 함수
 export async function userLogin (email:any, password:string) {
   return signInWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
-    // Signed in
     const user = userCredential.user;
+    console.log('로그인한 유저 정보',user)
     return user
-    // ...
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
+    return errorCode
   });
+}
+
+interface LoginUserType {
+  userEmail:string;
+  userNickname:string
+}
+// 현재 로그인한 user의 정보를 가져오는 함수
+const dbRef = ref(db);
+export async function getUserData (uid:string){
+  // console.log('전달받은 uid',uid)
+  return get(child(dbRef,`users/${uid}`))
+  .then((snapshot) => {
+    if (snapshot.exists()) {
+      // console.log('firebase함수',snapshot.val());
+      const us = snapshot.val()
+      return Object.values(us)
+    } else {
+      console.log("No data available");
+    }
+  })
 }
 
 
@@ -95,26 +115,27 @@ export  async function userState (callback:any) {
 }
 
 // 데이터 post하는 함수
-export function writeDiaryData(userId:any,title:string, body:string, playlists:any, today:string) {
-  set(ref(db, 'diarys/' + userId), {
-      diaryId: userId,
+export function writeDiaryData(userUid:any,title:string, body:string, playlists:any, today:string, nickname: string , uidData:any) {
+  const uuid = uuidv4()
+  set(ref(db, `diarys/${userUid}/${uuid}`), [{
+      diaryId: uuid,
       title: title,
       body: body,
       viewCount: 0,
       likeCount: 0,
       createdAt: today,
-      modifiedAt: "2023-02-22T07:14:00",
-      userNickname: "한대희",
+      modifiedAt: "",
+      userNickname: nickname,
       playlists:playlists,
       comments: {
-        commentId: userId + 1,
-        diaryId: userId,
+        commentId: userUid + 1,
+        diaryId: userUid,
         body: "",
         createdAt: "",
         modifiedAt: "",
         userNickname: '한대희'
       }
-  });
+  }]);
 }
 export function writeComment(userId:any) {
   set(ref(db,`diarys/${userId}`), {
@@ -132,31 +153,37 @@ export function writeComment(userId:any) {
 
 //데이터 불러오는 함수
 export async function getData () {
-  // const dbRef = ref(getDatabase());
 return get(ref(db, `diarys`))
-  .then((snapshot) => {
+.then((snapshot) => {
   if (snapshot.exists()) {
-    // console.log(snapshot.val());
+    console.log(snapshot.val());
     return Object.values(snapshot.val())
   } else {
     console.log("No data available");
   }
 })
-// .then(data => console.log(data))
 .catch((error) => {
   console.error(error);
 });
 }
 
-
-export async function getUserData (uid:string):Promise<string[]|undefined> {
-  return get(ref(db,`users/${uid}`))
+// 특정 uid의 diary 가져오기
+export async function getUidData (userUid:string) {
+  return get(ref(db, `diarys/${userUid}`))
   .then((snapshot) => {
     if (snapshot.exists()) {
-      // console.log(snapshot.val());
+      console.log(snapshot.val());
       return Object.values(snapshot.val())
     } else {
       console.log("No data available");
     }
   })
-}
+  .catch((error) => {
+    console.error(error);
+  });
+  }
+
+  // 다이어리 수정 함수
+  export async function patchDiary (userUid:string) {
+    // return (ref(db, `diarys/${userUid}/${product.id}`), product)
+  }

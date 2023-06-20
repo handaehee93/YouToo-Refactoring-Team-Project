@@ -93,7 +93,8 @@ PaginationProps) {
     }
     return iArr;
   };
-  const allArr: number[] = createArr(numAllPages); // nArr 함수에 전체 페이지의 개수를 배열로 담음
+  const allArr: number[] = createArr(numAllPages); 
+  // nArr 함수에 전체 페이지의 개수를 배열로 담음
   // const tagOneArr: number[] = createArr(numTagOnePages);
   // const tagTwoArr: number[] = createArr(numTagTwoPages);
   // const tagThreeArr: number[] = createArr(numTagThreePages);

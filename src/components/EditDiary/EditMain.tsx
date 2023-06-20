@@ -1,28 +1,21 @@
 import EditList from "./EditList";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { DiaryData } from "../../util/Type";
-import { BASE_API } from "../../util/API";
 
-function EditMain() {
+
+export default function EditMain() {
   const [detailData, setDetailData] = useState<DiaryData>();
 
   const { diaryId } = useParams();
-
-  // 선택한 다이어리 get 요청
-  const getDetailData = async () => {
-    try {
-      const res = await BASE_API.get(`/diary/${diaryId}`);
-      setDetailData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // 디테일 페이지에서 navigate로 현재 데이터를 전달 하고, useLoacatin으로 받아옴
+  const {state: { list }} = useLocation()
   useEffect(() => {
-    getDetailData();
-  }, []);
+    setDetailData(list)
+  },[list])
+
 
   return <>{detailData && <EditList list={detailData} />}</>;
 }
 
-export default EditMain;
+

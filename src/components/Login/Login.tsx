@@ -3,9 +3,91 @@ import { useNavigate, Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import { BASE_API } from "../../util/API";
-import { userLogin } from '../../firebase';
+import { getUserData, userLogin } from '../../firebase';
 import { useAppDispatch } from '../../redux/store/hooks';
 import { loginSlice, logined } from '../../redux/slice/LoginSlice';
+
+
+
+interface FormValue {
+  email: string;
+  password: any;
+}
+
+function Login() {
+  const [loginError, setLoginError] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValue>();
+
+  const onSubmit: SubmitHandler<FormValue> = (data) => {
+    userLogin(data.email, data.password)
+      .then(user => {
+        console.log('로그인한',user.uid)
+        if(user === 'auth/invalid-email') { 
+          alert('이메일과 비밀번호를 다시 확인해 주세요')
+          // dispatch(logined())
+          // dispatch(logined(user))
+          // dispatch(loginSlice.actions.login())
+        } else {
+          getUserData(user.uid)
+            // .then((res:any)=> console.log(res[1]))
+            // .then((res:any) => dispatch(logined(user)))
+            .then((res:any) => dispatch(logined(res && res[1])))
+            .then(()=>  navigate('/'))
+
+        }
+      })
+    };
+
+  return (
+    <LoginContainer>
+      <Logo>
+        <Link to='/'>나만의 작은 음악 다이어리</Link>
+      </Logo>
+      <FormContainer>
+        {/* {loginError ? <Errormsg>The email or password is incorrect.</Errormsg> : null} */}
+        <EmailInput
+          type='email'
+          placeholder='이메일'
+          {...register("email", {
+            required: '이메일을 입력해 주세요',
+          })}
+        />
+        {errors.email && errors.email.type === "required" && (
+          <Errormsg>이메일을 입력해 주세요</Errormsg>
+        )}
+        <PasswordInput
+          type='password'
+          placeholder='비밀번호'
+          {...register("password", {
+            required: '비밀번호를 입력해 주세요',
+          })}
+        />
+        {errors.password && errors.password.type === "required" && (
+          <Errormsg>비밀번호를 입력해 주세요</Errormsg>
+        )}
+        <LoginButton type='button' onClick={handleSubmit(onSubmit)}>
+          로그인
+        </LoginButton>
+      </FormContainer>
+      <Link to='/Signup'>
+        <MoveSignup>
+          <span className='bold'>회원 가입</span>
+        </MoveSignup>
+      </Link>
+    </LoginContainer>
+  );
+}
+
+
+
+export default Login;
 
 const LoginContainer = styled.div`
   height: 100vh;
@@ -60,7 +142,8 @@ const PasswordInput = styled.input`
   height: 50px;
   border-radius: 4px;
   padding: 10px 8px 10px 8px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
+  margin-top:10px;
   color: ${(props) => props.theme.mainText};
   border: none;
   border: 1px solid ${(props) => props.theme.disabledTagBorder};
@@ -117,92 +200,3 @@ const Errormsg = styled.p`
   padding: 2px;
   font-size: 12px;
 `;
-
-interface FormValue {
-  email: string;
-  password: any;
-}
-
-function Login() {
-  const [loginError, setLoginError] = useState(false);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValue>();
-
-  const onSubmit: SubmitHandler<FormValue> = (data) => {
-    userLogin(data.email, data.password)
-      .then(user => {
-        if(user) {
-          navigate('/')
-          // dispatch(logined())
-          dispatch(logined(user))
-          // dispatch(loginSlice.actions.login())
-        }
-      })
-    // BASE_API.post(`/auth/login`, {
-    //   email: data.email,
-    //   password: data.password,
-    // })
-    //   .then((res) => {
-    //     if (res.headers.authorization) {
-    //       localStorage.setItem("accessToken", res.headers.authorization);
-    //       localStorage.setItem("CURRENT_USER", JSON.stringify(res.data));
-    //     }
-    //     setLoginError(false);
-    //   })
-    //   .then(() => {
-    //     navigate("/");
-    //     window.location.reload();
-    //   })
-    //   .catch(() => {
-    //     setLoginError(true);
-    //   });
-  };
-
-  return (
-    <LoginContainer>
-      <Logo>
-        <Link to='/'>나만의 작은 음악 다이어리</Link>
-      </Logo>
-      <FormContainer>
-        {errors.email && errors.email.type === "required" && (
-          <Errormsg>Email cannot be empty.</Errormsg>
-        )}
-        {errors.password && errors.password.type === "required" && (
-          <Errormsg>Password cannot be empty.</Errormsg>
-        )}
-        {loginError ? <Errormsg>The email or password is incorrect.</Errormsg> : null}
-        <EmailInput
-          type='email'
-          placeholder='이메일'
-          {...register("email", {
-            required: true,
-          })}
-        />
-        <PasswordInput
-          type='password'
-          placeholder='비밀번호'
-          {...register("password", {
-            required: true,
-          })}
-        />
-        <LoginButton type='button' onClick={handleSubmit(onSubmit)}>
-          로그인
-        </LoginButton>
-      </FormContainer>
-      <PasswordFind>비밀번호를 잊으셨나요?</PasswordFind>
-      <Link to='/Signup'>
-        <MoveSignup>
-          계정이 없으신가요? <span className='bold'>가입하기</span>
-        </MoveSignup>
-      </Link>
-    </LoginContainer>
-  );
-}
-
-export default Login;
