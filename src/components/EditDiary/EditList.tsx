@@ -1,45 +1,57 @@
 import * as NewMain from "../NewDiary/NewMain";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { DiaryDataProps } from "../../util/Type";
+import { DiaryData, DiaryDataProps } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import EditPlayList from "./EditPlayList";
 import { PlaylistData } from "../../util/Type";
-import { getUidData, getUserData, userState } from '../../firebase';
+import { getUidData, getUserData, patchDiary, userState } from '../../firebase';
 import { useAppSelector } from '../../redux/store/hooks';
 import { selectLogin } from '../../redux/slice/LoginSlice';
 
-function EditList({ list }: DiaryDataProps) {
+interface Props {
+  list:DiaryData
+  listUid:string
+}
+function EditList({ list, listUid }: Props) {
   const [userUid, setUserUid] = useState('')
-  console.log('수정',list)
+  console.log('수정페이지전체 데이터', list)
 
   const [editTitle, setEditTitle] = useState<string>(list.title);
   const [editBody, setEditBody] = useState<string>(list.body);
   const [editPlayList, setEditPlayList] = useState<PlaylistData[]>(list.playlists);
   const [editUrl, setEditUrl] = useState<string>("");
-
+  console.log('수정된 플레이리스트',editPlayList)
   const navigate = useNavigate();
   const { diaryId } = useParams();
 
-  // getUserData
+  const patch = {
+    ...list, 
+    title:editTitle, 
+    body:editBody, 
+    playlists: editPlayList
+  }
+  console.log('patch',patch)
+  // 사용자 uid를 가져 오기 위해 현재 로그인 한 사용자 정보 가져오기
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
   },[])
-  console.log(userUid)
+  // console.log(userUid)
 
 
   // 다이어리 patch 요청
-  const submitHandler = async () => {
-    const editDiary = {
-      title: editTitle,
-      body: editBody,
-      playlists: editPlayList,
-    };
-    await TOKEN_API.patch(`/diary/${diaryId}`, editDiary);
-    navigate(`/DetailDiary/${diaryId}`);
+  const submitHandler = () => {
+    patchDiary(userUid, listUid, patch)
+    // const editDiary = {
+    //   title: editTitle,
+    //   body: editBody,
+    //   playlists: editPlayList,
+    // };
+    // await TOKEN_API.patch(`/diary/${diaryId}`, editDiary);
+    // navigate(`/DetailDiary/${diaryId}`);
   };
 
   // 제목 수정 체인지 이벤트

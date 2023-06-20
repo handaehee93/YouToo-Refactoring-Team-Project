@@ -9,13 +9,13 @@ export default function EditMain() {
 
   const { diaryId } = useParams();
   // 디테일 페이지에서 navigate로 현재 데이터를 전달 하고, useLoacatin으로 받아옴
-  const {state: { list }} = useLocation()
+  const {state: { list, listUid }} = useLocation()
   useEffect(() => {
     setDetailData(list)
   },[list])
 
 
-  return <>{detailData && <EditList list={detailData} />}</>;
+  return <>{detailData && <EditList list={detailData} listUid={listUid}/>}</>;
 }
 
 

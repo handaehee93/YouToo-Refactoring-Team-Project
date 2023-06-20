@@ -10,7 +10,7 @@ import { RiErrorWarningLine } from "react-icons/ri";
 import DOMPurify from "dompurify";
 import { useContext } from "react";
 import { myContext } from "../../theme";
-import { getUserData, userState, writeComment } from '../../firebase';
+import { getUserData, removeFromDiary, userState, writeComment } from '../../firebase';
 import { useAppSelector } from '../../redux/store/hooks';
 import { selectLogin } from '../../redux/slice/LoginSlice';
 
@@ -30,7 +30,7 @@ function DetailList({ list, getDetailData, listUid }: Props) {
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
   },[])
-  console.log('uid',userUid)
+  // console.log('uid',userUid)
   
   
   const [checkLike, setCheckLike] = useState<boolean>(false);
@@ -100,11 +100,12 @@ function DetailList({ list, getDetailData, listUid }: Props) {
 
   // 선택한 다이어리 delete 요청
   const postDelete = async () => {
-    await TOKEN_API.delete(`/diary/${diaryId}`);
-    const scrollY = document.body.style.top;
-    document.body.style.cssText = "";
-    window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
-    navigate("/");
+    removeFromDiary(userUid, listUid)
+    // await TOKEN_API.delete(`/diary/${diaryId}`);
+    // const scrollY = document.body.style.top;
+    // document.body.style.cssText = "";
+    // window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
+    // navigate("/");
   };
 
   // 댓글 post 요청
@@ -144,7 +145,7 @@ function DetailList({ list, getDetailData, listUid }: Props) {
 
   // 수정 페이지로 이동
   const moveEditDiary = () => {
-    navigate(`/EditDiary/${list.diaryId}`,{state: {list}});
+    navigate(`/EditDiary/${list.diaryId}`,{state: {list,listUid}});
   };
 
   return (

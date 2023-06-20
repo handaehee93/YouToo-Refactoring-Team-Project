@@ -15,7 +15,7 @@ export default function DiaryCard({ list, listUid }: Props) {
   console.log('다이어리카드의 ', listUid)
   
   const moveDetailDiary = () => {
-    navigate(`/DetailDiary/${list.diaryId}`,{state: {list, listUid}});
+    navigate(`/DetailDiary/${list.diaryId}`,{state: {list,listUid}});
   };
   
   return (
@@ -23,7 +23,7 @@ export default function DiaryCard({ list, listUid }: Props) {
       <Thumbnail src={list.playlists && list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
       <InfoArea>
         <div className='infoTitle'>{list.title}</div>
-        <div className='infoDate'>{list.createdAt.substring(0, 10)}</div>
+        {/* <div className='infoDate'>{list.createdAt.substring(0, 10)}</div> */}
         {/* <Tag>
           {list.tag.map((value: string, index: number) => {
             return <li key={index}>{value}</li>;

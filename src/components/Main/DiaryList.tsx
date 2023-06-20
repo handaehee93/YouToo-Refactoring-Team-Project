@@ -36,31 +36,7 @@ function DiaryList({ list }:DiaryDataProps) {
         })
       } */}
     </>
-    // <DiaryListContainer onClick={moveDetailDiary}>
-    //   <Thumbnail src={list.playlists && list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
-    //   <InfoArea>
-    //     <div className='infoTitle'>{list.title}</div>
-    //     {/* <div className='infoDate'>{list.createdAt.substring(0, 10)}</div> */}
-    //     {/* <Tag>
-    //       {list.tag.map((value: string, index: number) => {
-    //         return <li key={index}>{value}</li>;
-    //       })}
-    //     </Tag> */}
-    //   </InfoArea>
-    //   <UserArea>
-    //     <ByUsername>
-    //       <Profile />
-    //       <div className='by'>by</div>
-    //       {list.userNickname}
-    //     </ByUsername>
-    //     <LikeAndComment>
-    //       <AiFillHeart className='likeIcon' size={16} />
-    //       {list.likeCount}
-    //       <FaRegCommentDots className='commentIcon' size={15} />
-    //       {/* {list.comments.length} */}
-    //     </LikeAndComment>
-    //   </UserArea>
-    // </DiaryListContainer>
+
   );
 }
 

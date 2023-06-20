@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, set, onValue, child, get } from "firebase/database";
+import { getDatabase, ref, set, onValue, child, get, remove } from "firebase/database";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -117,7 +117,7 @@ export  async function userState (callback:any) {
 // 데이터 post하는 함수
 export function writeDiaryData(userUid:any,title:string, body:string, playlists:any, today:string, nickname: string , uidData:any) {
   const uuid = uuidv4()
-  set(ref(db, `diarys/${userUid}/${uuid}`), [{
+  set(ref(db, `diarys/${userUid}/${uuid}`), {
       diaryId: uuid,
       title: title,
       body: body,
@@ -126,7 +126,7 @@ export function writeDiaryData(userUid:any,title:string, body:string, playlists:
       createdAt: today,
       modifiedAt: "",
       userNickname: nickname,
-      playlists:playlists,
+      playlists: playlists,
       comments: {
         commentId: userUid + 1,
         diaryId: userUid,
@@ -135,7 +135,7 @@ export function writeDiaryData(userUid:any,title:string, body:string, playlists:
         modifiedAt: "",
         userNickname: '한대희'
       }
-  }]);
+  });
 }
 export function writeComment(userId:any) {
   set(ref(db,`diarys/${userId}`), {
@@ -184,6 +184,11 @@ export async function getUidData (userUid:string) {
   }
 
   // 다이어리 수정 함수
-  export async function patchDiary (userUid:string) {
-    // return (ref(db, `diarys/${userUid}/${product.id}`), product)
+  export async function patchDiary (userUid:string, listUid: string, list:any) {
+    return set(ref(db, `diarys/${userUid}/${listUid}`),list )
+  }
+
+  // 다이어리 삭제 함수
+  export async function removeFromDiary (userUid:string, listUid:string) {
+    return remove(ref(db, `diarys/${userUid}/${listUid}`))
   }
