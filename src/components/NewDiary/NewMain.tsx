@@ -1,26 +1,19 @@
 import styled from "styled-components";
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { TOKEN_API } from "../../util/API";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import NewPlayList from "./NewPlayList";
-import { myContext } from "../../theme";
 import { DiaryData, PlaylistData } from "../../util/Type";
-import { getUidData, getUserData, userState } from '../../firebase';
-import { v4 as uuidv4 } from 'uuid';
+import { getUidData,userState } from '../../firebase';
 import { writeDiaryData } from '../../firebase';
 import { useAppSelector } from '../../redux/store/hooks';
 import { selectLogin } from '../../redux/slice/LoginSlice';
-import { RootState } from '../../redux/store/store';
-import { getuid } from 'process';
+import { IoIosClose } from "react-icons/io";
 
-interface Post  {
-  title: string
-}
 
-function NewMain():any {
+export default function NewMain():any {
   const [newTitle, setNewTitle] = useState<string>("");
   const [newBody, setNewBody] = useState<string>("");
   const [newPlayList, setNewPlayList] = useState<PlaylistData[]>([]);
@@ -31,23 +24,28 @@ function NewMain():any {
   const navigate = useNavigate();
   const today: string = new Date().toISOString().substring(0, 10);
   const nickName = useAppSelector(selectLogin);
-
+  const [newTag, setNewTag] = useState<string>('');
+  const [exData,setExdata] = useState()
+  
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
     setNickname(nickName && nickName)
   },[])
 
 
-
+useEffect(() => {
   getUidData(userUid && userUid)
-  .then(res =>{
-    console.log('res',res)
+  .then((res:any) => {
+    setExdata(res[0])
+    // console.log('ex',exData)
+    return
     // const ss = res?.slice(0,10)
     // console.log(ss && ss)
   })
+},[])
 
-console.log(uidData)
-  
+
+
   
   // 제목 수정 체인지 이벤트
   const changeNewTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,6 +108,10 @@ console.log(uidData)
       });
   };
 
+      // 드롭다운 선택 시 태그 추가하는 이벤트 핸들러
+  const addCategory = (value: string) => {
+    setNewTag(value)
+  };
   return (
     <MainContainer>
       <MainWrapper>
@@ -121,7 +123,7 @@ console.log(uidData)
             placeholder='제목을 입력하세요'
             onChange={changeNewTitle}
           />
-          <SubmitButton onClick={() => writeDiaryData(userUid,newTitle,newBody,newPlayList, today, nickname, uidData)} disabled={newTitle.length === 0}>
+          <SubmitButton onClick={() => writeDiaryData(userUid,newTitle,newBody,newPlayList, today, nickname, uidData, newTag)} disabled={newTitle.length === 0}>
             등록하기
           </SubmitButton>
         </TitleArea>
@@ -136,6 +138,26 @@ console.log(uidData)
               <span className='text'>등록일</span>
               {today.toString()}
             </UserInfo>
+            <UserInfoTag>
+                <span className='tag'>태그</span>
+                <div className='drop'>
+                  <select onChange={(e) => addCategory(e.target.value)} required>
+                    <option value=''>태그 선택</option>
+                    <option value='음악'>음악</option>
+                    <option value='스포츠'>스포츠</option>
+                    <option value='교육'>교육</option>
+                    <option value='예능'>예능</option>
+                    <option value='요리'>요리</option>
+                    <option value='교양'>교양</option>
+                    <option value='테크'>테크</option>
+                    <option value='먹방'>먹방</option>
+                    <option value='기타'>기타</option>
+                  </select>
+                </div>
+                <div className='selected'>
+                  {newTag}
+                </div>
+            </UserInfoTag>
           </InfoArea>
         </AlbumCoverArea>
         <AlbumInfoArea>
@@ -174,14 +196,16 @@ console.log(uidData)
   );
 }
 
-export default NewMain;
+
+
+
 
 export const MainContainer = styled.div`
   display: flex;
   justify-content: center;
 `;
 
-export const MainWrapper = styled.div`
+export const MainWrapper = styled.form`
   width: 100vw;
   max-width: 900px;
   min-width: 300px;
@@ -233,7 +257,6 @@ export const SubmitButton = styled.button`
 export const AlbumCoverArea = styled.div`
   display: flex;
   margin: 30px 0 30px 0;
-
   > .coverImg {
     width: 190px;
     height: 180px;
@@ -249,16 +272,34 @@ export const InfoArea = styled.div`
 `;
 
 export const UserInfo = styled.div`
+  display:flex;
   margin-bottom: 15px;
   font-size: 14px;
   color: ${(props) => props.theme.mainText};
-
   > .text {
     font-size: 13px;
     margin-right: 50px;
   }
 `;
 
+export const UserInfoTag = styled.div`
+  display:flex;
+  font-size: 14px;
+  color: ${(props) => props.theme.mainText};
+  > .tag {
+    font-size: 13px;
+    margin-right: 50px;
+  }
+  >.drop {
+    margin-left:10px
+  }
+  > .selected {
+    margin-left:50px;
+  }
+`;
+
+
+// 다이어라 소개 부분
 export const AlbumInfoArea = styled.div`
   padding: 30px 10px 80px 10px;
   border-top: 1px solid ${(props) => props.theme.detailLine};
@@ -298,6 +339,7 @@ export const AlbumInfoArea = styled.div`
   }
 `;
 
+// 다이어리 수록곡 부분
 export const PlayListArea = styled.div`
   padding: 30px 10px 80px 10px;
   border-top: 1px solid ${(props) => props.theme.detailLine};
@@ -359,3 +401,17 @@ export const UrlInput = styled.div`
   //   await TOKEN_API.post(`/diary`, newDiary);
   //   navigate(`/`);
   // };
+
+
+
+// 
+
+
+                {/* {newTag.map((value: string, index: number) => (
+                      <li key={index}>
+                        <div className='tagTitle'>{value}</div>
+                        <div className='tagcloseBtn' onClick={() => removeTags(index)}>
+                          <IoIosClose size={20} />
+                        </div>
+                      </li>
+                    ))} */}

@@ -8,24 +8,25 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 interface Props {
-  list: DiaryData[]
+  list: DiaryData
+
 }
-function DiaryList({ list }:DiaryDataProps) {
+function DiaryList({ list }:Props) {
   const navigate = useNavigate();
-  const arr = Array(list)
+  // const arr = Array(list)
   // console.log('arr',arr)
   const list2 = Object.values(list)
   const listUid = Object.keys(list)
 
   // console.log('DiaryMain에서 props로 전달한 데이터',list)
-  console.log('DiaryMain에서 props로 전달한 데이터의 value',list2)
-  console.log('DiaryMain에서 props로 전달한 데이터의 키',listUid)
-
+  // console.log('DiaryMain에서 props로 전달한 데이터의 value',list2)
+  // console.log('DiaryMain에서 props로 전달한 데이터의 키',listUid)
+const uuid = uuidv4()
   return (
     <>
       {
         list2 && list2.map((list1,idx) => { 
-          return <DiaryCard list={list1} key={list1.diaryId} listUid={listUid[idx]}/>
+          return <DiaryCard list={list1} key={list1.diaryId} listUid={listUid[idx]} />
         })
       }
       {/* {

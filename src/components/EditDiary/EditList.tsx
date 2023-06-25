@@ -8,15 +8,16 @@ import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import EditPlayList from "./EditPlayList";
 import { PlaylistData } from "../../util/Type";
-import { getUidData, getUserData, patchDiary, userState } from '../../firebase';
+import { getData, getUidData, getUserData, patchDiary, userState } from '../../firebase';
 import { useAppSelector } from '../../redux/store/hooks';
 import { selectLogin } from '../../redux/slice/LoginSlice';
 
 interface Props {
   list:DiaryData
   listUid:string
+  setDiaryData:any
 }
-function EditList({ list, listUid }: Props) {
+function EditList({ list, listUid , setDiaryData}: Props) {
   const [userUid, setUserUid] = useState('')
   console.log('수정페이지전체 데이터', list)
 
@@ -24,9 +25,8 @@ function EditList({ list, listUid }: Props) {
   const [editBody, setEditBody] = useState<string>(list.body);
   const [editPlayList, setEditPlayList] = useState<PlaylistData[]>(list.playlists);
   const [editUrl, setEditUrl] = useState<string>("");
-  console.log('수정된 플레이리스트',editPlayList)
   const navigate = useNavigate();
-  const { diaryId } = useParams();
+
 
   const patch = {
     ...list, 
@@ -34,24 +34,19 @@ function EditList({ list, listUid }: Props) {
     body:editBody, 
     playlists: editPlayList
   }
-  console.log('patch',patch)
+
   // 사용자 uid를 가져 오기 위해 현재 로그인 한 사용자 정보 가져오기
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
   },[])
-  // console.log(userUid)
+
 
 
   // 다이어리 patch 요청
   const submitHandler = () => {
     patchDiary(userUid, listUid, patch)
-    // const editDiary = {
-    //   title: editTitle,
-    //   body: editBody,
-    //   playlists: editPlayList,
-    // };
-    // await TOKEN_API.patch(`/diary/${diaryId}`, editDiary);
-    // navigate(`/DetailDiary/${diaryId}`);
+    alert('다이어리가 수정되었습니다')
+    navigate('/')
   };
 
   // 제목 수정 체인지 이벤트

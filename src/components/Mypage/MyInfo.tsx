@@ -1,9 +1,205 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { UserData } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
 
+
+
+export interface Props {
+  list: any
+}
+
+function MyInfo({ list }: Props) {
+  console.log(list)
+  const [userEmail, setUserEmail] = useState<string>()
+  const [userNickname, setNickname] = useState<string>();
+
+  useEffect(() => {
+    setUserEmail( list[0])
+    setNickname(list[1])
+  },[])
+  
+  const [editNickname, setEditNickname] = useState<boolean>(true);
+  // const [password, setPassword] = useState<string>(list.password);
+  const [editPassword, setEditPassword] = useState<boolean>(false);
+  const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
+
+  const fileInput = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  // 프로필 이미지 클릭 시 input으로 연결되는 이벤트
+  const clickProfile = () => {
+    fileInput.current?.click();
+  };
+
+  // 선택한 이미지 미리보기 이벤트
+  const saveImage = (e: any) => {
+    // setImage(URL.createObjectURL(e.target.files[0]));
+  };
+
+
+
+  // 유저 닉네임 patch 요청
+  const changeNickname = async () => {
+    // const newNickname = {
+    //   userId: list.userId,
+    //   nickname: nickname,
+    //   password: list.password,
+    // };
+    // const res = await TOKEN_API.patch(`/users/${list.userId}`, newNickname);
+    // getUserData(res.data);
+    // setEditNickname(false);
+  };
+
+  // 유저 패스워드 patch 요청
+  const changePassword = async () => {
+    // const newPassword = {
+    //   userId: list.userId,
+    //   nickname: list.nickname,
+    //   password: password,
+    // };
+    // const res = await TOKEN_API.patch(`/users/${list.userId}`, newPassword);
+    // getUserData(res.data);
+    // setEditPassword(false);
+  };
+
+  // 유저 닉네임 변경 클릭 이벤트
+  const onClickEditButton = () => {
+    setEditNickname(!editNickname);
+  };
+
+  // 유저 패스워드 변경 클릭 이벤트
+  const onClickPasswordButton = () => {
+    setEditPassword(!editPassword);
+  };
+
+  // 유저 닉네임 변경 체인지 이벤트
+  const onChangeEditInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // setNickname(e.target.value);
+  };
+
+  // 유저 패스워드 변경 체인지 이벤트
+  const onChangePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // setPassword(e.target.value);
+  };
+
+  // 회원 탈퇴 모달 오픈 이벤트 핸들러
+  const openModalHandler = () => {
+    setWithdrawalModalOpen(!withDrawalModalOpen);
+  };
+
+  // 회원 탈퇴 delete 요청
+  const withDrawal = async () => {
+    // await TOKEN_API.delete(`/users/${list.userId}`);
+    // localStorage.removeItem("accessToken");
+    // localStorage.removeItem("CURRENT_USER");
+    // navigate("/");
+    // window.location.reload();
+  };
+
+  return (
+    <>
+
+      <MySettingContainer>
+        <PasswordWrapper>
+          <div className='passwordTitle'>회원가입 이메일</div>
+          {editPassword ? (
+            <input
+              className='editPasswordArea'
+              type='text'
+              // value={password}
+              onChange={onChangePasswordInput}
+            ></input>
+          ) : (
+            <div className='passwordArea'>{userEmail && userEmail}</div>
+          )}
+          {editPassword ? (
+            <EditPasswordBtn onClick={changePassword}>저장</EditPasswordBtn>
+          ) : (
+            <EditPasswordBtn onClick={onClickPasswordButton}>수정</EditPasswordBtn>
+          )}
+        </PasswordWrapper>
+          <WarningText>
+            <div className='waringText'>회원가입한 이메일입니다.</div>
+          </WarningText>
+        <PasswordWrapper>
+            <div className='passwordTitle'>닉네임</div>
+            {editPassword ? (
+              <input
+                className='editPasswordArea'
+                type='text'
+                // value={password}
+                onChange={onChangePasswordInput}
+              ></input>
+            ) : (
+              <div className='passwordArea'>{userNickname}</div>
+            )}
+            {editPassword ? (
+              <EditPasswordBtn onClick={changePassword}>저장</EditPasswordBtn>
+            ) : (
+              <EditPasswordBtn onClick={onClickPasswordButton}>수정</EditPasswordBtn>
+            )}
+          </PasswordWrapper>
+            <WarningText>
+            <div className='waringText'>회원가입시 입력한 닉네임</div>
+            </WarningText>
+          <PasswordWrapper>
+            <div className='passwordTitle'>비밀번호</div>
+            {editPassword ? (
+              <input
+                className='editPasswordArea'
+                type='text'
+                // value={password}
+                onChange={onChangePasswordInput}
+              ></input>
+            ) : (
+              <div className='passwordArea'>********</div>
+            )}
+            {editPassword ? (
+              <EditPasswordBtn onClick={changePassword}>저장</EditPasswordBtn>
+            ) : (
+              <EditPasswordBtn onClick={onClickPasswordButton}>수정</EditPasswordBtn>
+            )}
+          </PasswordWrapper>
+            <WarningText>
+              <div className='waringText'>로그인 시 사용되는 비밀번호입니다.</div>
+            </WarningText>
+      </MySettingContainer>
+      <MyWithdrawalContainer>
+        <MyWithdrawalWrapper>
+          <div className='withdrawalTitle'>회원 탈퇴</div>
+          <button className='withdrawalBtn' onClick={openModalHandler}>
+            회원 탈퇴
+          </button>
+          {withDrawalModalOpen ? (
+            <WithdrawalModalBack>
+              <WithdrawalModalView>
+                <div className='deleteModalTitle'>정말 탈퇴 하시겠습니까?</div>
+                <div className='warningText'>
+                  탈퇴 시 작성하신 다이어리 및 댓글이 모두 삭제되며
+                  <br />
+                  복구되지 않습니다.
+                </div>
+                <button className='deleteCancelButton' onClick={openModalHandler}>
+                  취소
+                </button>
+                <button className='deleteButton' onClick={withDrawal}>
+                  탈퇴
+                </button>
+              </WithdrawalModalView>
+            </WithdrawalModalBack>
+          ) : null}
+        </MyWithdrawalWrapper>
+        <WarningText>
+          탈퇴 시 작성하신 다이어리 및 댓글이 모두 삭제되며 복구되지 않습니다.
+        </WarningText>
+      </MyWithdrawalContainer>
+    </>
+  );
+}
+
+export default MyInfo;
 const MyInfoContainer = styled.div`
   display: flex;
   width: 100vw;
@@ -58,7 +254,7 @@ const NickNameWrapper = styled.div`
   > .editNicknameArea {
     width: 100%;
     font-size: 25px;
-    color: ${(props) => props.theme.mainText};
+    /* color: ${(props) => props.theme.mainText};
     background-color: ${(props) => props.theme.background};
     font-weight: 600;
     border: 0.5px solid ${(props) => props.theme.editBorder};
@@ -66,7 +262,7 @@ const NickNameWrapper = styled.div`
     padding: 10px 8px 10px 8px;
     &:focus {
       outline: none;
-    }
+    } */
   }
 
   > .nicknameArea {
@@ -256,182 +452,42 @@ const WithdrawalModalView = styled.div`
   }
 `;
 
-export interface UserDataProps {
-  list: UserData;
-  getUserData: React.Dispatch<React.SetStateAction<object>>;
-}
 
-function MyInfo({ list, getUserData }: UserDataProps) {
-  const [image, setImage] = useState(list.imageUrl);
-  const [nickname, setNickname] = useState<string>(list.nickname);
-  const [editNickname, setEditNickname] = useState<boolean>(false);
-  const [password, setPassword] = useState<string>(list.password);
-  const [editPassword, setEditPassword] = useState<boolean>(false);
-  const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
-
-  const fileInput = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
-
-  // 프로필 이미지 클릭 시 input으로 연결되는 이벤트
-  const clickProfile = () => {
-    fileInput.current?.click();
-  };
-
-  // 선택한 이미지 미리보기 이벤트
-  const saveImage = (e: any) => {
-    setImage(URL.createObjectURL(e.target.files[0]));
-  };
-
-  // 선택한 이미지 patch 요청
-  const changeImage = async () => {
-    const newImg = {
-      imageUrl: image,
-      nickname: list.nickname,
-      password: list.password,
-    };
-    const res = await TOKEN_API.patch(`/users/${list.userId}`, newImg);
-    setImage(res.data);
-    window.location.reload();
-  };
-
-  // 유저 닉네임 patch 요청
-  const changeNickname = async () => {
-    const newNickname = {
-      userId: list.userId,
-      nickname: nickname,
-      password: list.password,
-    };
-    const res = await TOKEN_API.patch(`/users/${list.userId}`, newNickname);
-    getUserData(res.data);
-    setEditNickname(false);
-  };
-
-  // 유저 패스워드 patch 요청
-  const changePassword = async () => {
-    const newPassword = {
-      userId: list.userId,
-      nickname: list.nickname,
-      password: password,
-    };
-    const res = await TOKEN_API.patch(`/users/${list.userId}`, newPassword);
-    getUserData(res.data);
-    setEditPassword(false);
-  };
-
-  // 유저 닉네임 변경 클릭 이벤트
-  const onClickEditButton = () => {
-    setEditNickname(!editNickname);
-  };
-
-  // 유저 패스워드 변경 클릭 이벤트
-  const onClickPasswordButton = () => {
-    setEditPassword(!editPassword);
-  };
-
-  // 유저 닉네임 변경 체인지 이벤트
-  const onChangeEditInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNickname(e.target.value);
-  };
-
-  // 유저 패스워드 변경 체인지 이벤트
-  const onChangePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  // 회원 탈퇴 모달 오픈 이벤트 핸들러
-  const openModalHandler = () => {
-    setWithdrawalModalOpen(!withDrawalModalOpen);
-  };
-
-  // 회원 탈퇴 delete 요청
-  const withDrawal = async () => {
-    await TOKEN_API.delete(`/users/${list.userId}`);
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("CURRENT_USER");
-    navigate("/");
-    window.location.reload();
-  };
-
-  return (
-    <>
-      <MyInfoContainer>
+      {/* <MyInfoContainer>
         <ProfileImgWrapper>
           <ProfileImg src={image} alt='프로필 이미지' onClick={clickProfile} />
           <ImgInput type='file' accept='image/*' onChange={saveImage} ref={fileInput} />
           <ImgSubmitBtn onClick={changeImage}>프로필 이미지 저장</ImgSubmitBtn>
         </ProfileImgWrapper>
         <NickNameWrapper>
+          {userNickname}
           {editNickname ? (
             <input
               className='editNicknameArea'
               type='text'
-              value={nickname}
+              value={userNickname}
               onChange={onChangeEditInput}
+              placeholder={list.nickname}
             ></input>
           ) : (
-            <div className='nicknameArea'>{list.nickname}</div>
-          )}
+            <div className='nicknameArea'>{userNickname}</div>
+          )} 
           {editNickname ? (
             <EditNicknameBtn onClick={changeNickname}>저장</EditNicknameBtn>
           ) : (
             <EditNicknameBtn onClick={onClickEditButton}>수정</EditNicknameBtn>
           )}
         </NickNameWrapper>
-      </MyInfoContainer>
-      <MySettingContainer>
-        <PasswordWrapper>
-          <div className='passwordTitle'>비밀번호</div>
-          {editPassword ? (
-            <input
-              className='editPasswordArea'
-              type='text'
-              value={password}
-              onChange={onChangePasswordInput}
-            ></input>
-          ) : (
-            <div className='passwordArea'>********</div>
-          )}
-          {editPassword ? (
-            <EditPasswordBtn onClick={changePassword}>저장</EditPasswordBtn>
-          ) : (
-            <EditPasswordBtn onClick={onClickPasswordButton}>수정</EditPasswordBtn>
-          )}
-        </PasswordWrapper>
-        <WarningText>
-          <div className='waringText'>로그인 시 사용되는 비밀번호입니다.</div>
-        </WarningText>
-      </MySettingContainer>
-      <MyWithdrawalContainer>
-        <MyWithdrawalWrapper>
-          <div className='withdrawalTitle'>회원 탈퇴</div>
-          <button className='withdrawalBtn' onClick={openModalHandler}>
-            회원 탈퇴
-          </button>
-          {withDrawalModalOpen ? (
-            <WithdrawalModalBack>
-              <WithdrawalModalView>
-                <div className='deleteModalTitle'>정말 탈퇴 하시겠습니까?</div>
-                <div className='warningText'>
-                  탈퇴 시 작성하신 다이어리 및 댓글이 모두 삭제되며
-                  <br />
-                  복구되지 않습니다.
-                </div>
-                <button className='deleteCancelButton' onClick={openModalHandler}>
-                  취소
-                </button>
-                <button className='deleteButton' onClick={withDrawal}>
-                  탈퇴
-                </button>
-              </WithdrawalModalView>
-            </WithdrawalModalBack>
-          ) : null}
-        </MyWithdrawalWrapper>
-        <WarningText>
-          탈퇴 시 작성하신 다이어리 및 댓글이 모두 삭제되며 복구되지 않습니다.
-        </WarningText>
-      </MyWithdrawalContainer>
-    </>
-  );
-}
+      </MyInfoContainer> */}
 
-export default MyInfo;
+        // 선택한 이미지 patch 요청
+  const changeImage = async () => {
+    // const newImg = {
+    //   imageUrl: image,
+    //   nickname: list.nickname,
+    //   password: list.password,
+    // };
+    // const res = await TOKEN_API.patch(`/users/${list.userId}`, newImg);
+    // setImage(res.data);
+    // window.location.reload();
+  };

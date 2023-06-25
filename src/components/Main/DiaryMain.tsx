@@ -2,72 +2,100 @@ import DiaryList from "./DiaryList";
 import Pagination from "./Pagination";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { DiaryData, DiaryData2 } from "../../util/Type";
-import { getData, writeComment, writeDiaryData } from '../../firebase';
+import { DiaryData} from "../../util/Type";
+import { getData} from '../../firebase';
 
 
 
 function DiaryMain() {
-  const [diaryData, setDiaryData] = useState<DiaryData[]>([]); // 전체 diary 데이터
+  const [diaryData, setDiaryData] = useState<DiaryData[]>([]);
   const [currentTab, setCurrentTab] = useState<number>(0); // 탭 이동 상태
   const [page, setPage] = useState<number>(1); // 현재 페이지 번호 (기본값: 1페이지부터 노출)
   const LIMIT_COUNT: number = 20;
   const offset: number = (page - 1) * LIMIT_COUNT; // 각 페이지에서 첫 데이터의 위치(index) 계산
 
-
-  useEffect(() => {
+const [selectTag, setSelectTag] = useState('')
+const [filterData, setFilter] = useState<DiaryData[]>([])
+const [tagState,setTagState] = useState(false)
+  
+useEffect(() => {
     getData()
     .then((data:any)=> setDiaryData(data))
   }, []);
-  console.log('다이어리 전체 데이터' ,diaryData)
-  // 태그 리스트
+  console.log('다이어리 전체 데이터',diaryData)
   const tagArr = [
     { feel: "전체" },
-    { feel: "#신나는" },
-    { feel: "#감성적인" },
-    { feel: "#잔잔한" },
-    { feel: "#애절한" },
-    { feel: "#그루브한" },
-    { feel: "#몽환적인" },
-    { feel: "#어쿠스틱한" },
-    { feel: "#청량한" },
+    { feel: "음악" },
+    { feel: "교양" },
+    { feel: "예능" },
+    { feel: "교육" },
+    { feel: "스포츠" },
+    { feel: "테크" },
+    { feel: "음식" },
+    { feel: "기타" },
   ];
+  
 
+
+  // const diaryKeys = Object.values(diaryData)
+  // console.log('필터',diaryKeys)
+  // const tagOneData = diaryData && diaryData.filter((value) => Object.keys(value)[0] === '스포츠');
+  // const tagOneData = diaryData.filter((value) => value.tag === (tagArr[1].feel));
+  // console.log('tag',tagOneData)
   // 태그 선택 이벤트 핸들러
-  const selectTagHandler = (index: number) => {
+  // const selectTagHandler = (index: number) => {
+  //   setCurrentTab(index);
+    
+  // };
+  const selectTagHandler = (e:any,index:number) => {
     setCurrentTab(index);
-  };
+    setSelectTag(e.target.value)
+    setTagState(true)
+    
+    if(e.target.value === '전체') {
+      setFilter(diaryData)
+    } else {
+      const selectedTagData = diaryData && diaryData.filter((value) => Object.keys(value)[0] === e.target.value);
+      setFilter(selectedTagData)
+    }
 
-  // console.log('배열전체 데이터',diaryData);
-  // const diaryData2= diaryData.map((data) => {
-  //   const a =  Object.values(data)
-  //   setDiaryData3(a)
-  // })
+  };
+  console.log('다이어리 전체 데이터' ,diaryData)
+  console.log('필터된 데이터',filterData)
+  console.log('선택한 태그', selectTag)
+
   return (
     <main>
       <ListTab>
-        {/* <button onClick={()=> {writeDiaryData(2)}}>ddd</button> */}
-        {/* <button onClick={() => {getData().then((data:any)=> {
-          setDiaryData(data)
-          console.log(data)})}}>getdata</button> */}
-          {/* <button onClick={() => {writeComment(8)}}>addComment</button> */}
+
         {tagArr.map((tab, index) => {
           return (
-            <li
+            <button
               key={index}
               className={currentTab === index ? "tab focused" : "tab"}
-              onClick={() => selectTagHandler(index)}
+              onClick={(e) => selectTagHandler(e,index)}
+              value={tab.feel}
             >
-              <div className='el'>{tab.feel}</div>
-            </li>
+              {tab.feel}
+              {/* <div className='el'>{tab.feel}</div> */}
+            </button>
           );
         })}
       </ListTab>
+      {/* data.diaryId */}
       <DiaryMainContainer>
         <DiaryMainWrapper>
-          {diaryData && diaryData.slice(offset, offset + LIMIT_COUNT).map((data) => {
-            return <DiaryList list={data} key={data.diaryId} />;
-          })}
+          {/* {diaryData && diaryData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
+            return <DiaryList list={data} key={idx} />;
+          })} */}
+          {
+            !tagState && diaryData ? diaryData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
+              return <DiaryList list={data} key={idx} />;
+            }):
+            tagState && filterData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
+              return <DiaryList list={data} key={idx}/>;
+            })
+            }
         </DiaryMainWrapper>
         {/* {currentTab === 0 ? (
           <DiaryMainWrapper>
@@ -262,3 +290,11 @@ const DiaryMainWrapper = styled.ul`
   //     console.error(err);
   //   }
   // };
+
+
+// 임시 데이터 저장 하는 코드
+{/* <button onClick={()=> {writeDiaryData(2)}}>ddd</button> */}
+{/* <button onClick={() => {getData().then((data:any)=> {
+setDiaryData(data)
+console.log(data)})}}>getdata</button> */}
+{/* <button onClick={() => {writeComment(8)}}>addComment</button> */}

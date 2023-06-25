@@ -8,14 +8,15 @@ import { FaRegCommentDots } from "react-icons/fa";
 interface Props {
   list: DiaryData
   listUid:string
+
 }
 export default function DiaryCard({ list, listUid }: Props) {
   
   const navigate = useNavigate();
-  console.log('다이어리카드의 ', listUid)
+  // console.log('다이어리카드의 ', listUid)
   
   const moveDetailDiary = () => {
-    navigate(`/DetailDiary/${list.diaryId}`,{state: {list,listUid}});
+    list && navigate(`/DetailDiary/${list.diaryId}`,{state: {list,listUid}});
   };
   
   return (
@@ -23,12 +24,10 @@ export default function DiaryCard({ list, listUid }: Props) {
       <Thumbnail src={list.playlists && list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
       <InfoArea>
         <div className='infoTitle'>{list.title}</div>
-        {/* <div className='infoDate'>{list.createdAt.substring(0, 10)}</div> */}
-        {/* <Tag>
-          {list.tag.map((value: string, index: number) => {
-            return <li key={index}>{value}</li>;
-          })}
-        </Tag> */}
+        <div className='infoDate'>{list && list.createdAt.substring(0, 10)}</div>
+        <div>
+          {list.tag}
+        </div>
       </InfoArea>
       <UserArea>
         <ByUsername>

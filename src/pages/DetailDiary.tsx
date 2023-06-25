@@ -10,9 +10,14 @@ import { useLocation } from 'react-router-dom';
 function DetailDiary() {
   // const { isLogin }: any = useContext(myContext);
   const LOGIN = useAppSelector(selectLogin);
+  console.log('로그인',LOGIN)
   // const LOG = JSON.stringify(LOGIN)
   // console.log('LOG',LOG.email)
-  console.log('redux', LOGIN)
+
+  const {state: {
+    list, listUid
+  }} = useLocation()
+  console.log('디테일 메인',list)
 
   return (
     <>

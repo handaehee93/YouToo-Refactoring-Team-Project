@@ -11,7 +11,8 @@ import { UserData } from "../../util/Type";
 import { BASE_API } from "../../util/API";
 import { useContext } from "react";
 import { myContext } from "../../theme";
-
+import { getUidData, getUserData, userState } from '../../firebase';
+import { v4 as uuidv4 } from 'uuid';
 const ListTab = styled.ul`
   display: flex;
   justify-content: center;
@@ -72,43 +73,47 @@ const CommentContainer = styled.ul`
 `;
 
 function MypageMain() {
+  const [userUid,setUserUid] = useState('')
   const [userData, setUserData] = useState<UserData[]>([]);
   const [myDiaryData, setMyDiaryData] = useState<DiaryData[]>([]);
   const [myLikeDiaryData, setLikeDiaryData] = useState<DiaryData[]>([]);
   const [myCommentData, setMyCommentData] = useState<CommentData[]>([]);
   const [currentTab, setCurrentTab] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
-
   const LIMIT_COUNT: number = 20;
   const offset: number = (page - 1) * LIMIT_COUNT;
-  const { currentUser }: any = useContext(myContext);
 
-  // Tab 1(MyInfo) : 나의 유저 정보만 불러오는 get 요청
-  const getUserData = async () => {
-    try {
-      const res = await BASE_API.get(`/users/${currentUser.userId}`);
-      setUserData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+
+
+  
   useEffect(() => {
-    getUserData();
+    userState((user:any) => setUserUid(user.uid))
   }, []);
 
   // Tab 2(MyDiary) : 나의 다이어리 데이터 get 요청
   const getMyDiaryData = async () => {
-    try {
-      const res = await BASE_API.get(`/diary`);
-      setMyDiaryData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
+    getUidData(userUid)
+    .then(res=> console.log('나의',res))
+    // try {
+    //   const res = await BASE_API.get(`/diary`);
+    //   setMyDiaryData(res.data);
+    // } catch (err) {
+    //   console.error(err);
+    // }
   };
-  useEffect(() => {
-    getMyDiaryData();
-  }, []);
 
+  useEffect(() => {
+    userUid && getUserData(userUid)
+    .then((res:any)=> {
+      setUserData(res)
+    })
+  }, [userUid]);
+
+  useEffect(() => {
+    getUidData(userUid)
+    .then((res:any) => setMyDiaryData(res))
+  },[])
+  console.log(myDiaryData)
   // Tab 3(MyLikeDiary) : 내가 좋아요 한 다이어리 데이터 get 요청
   // const getLikeData = async () => {
   //   try {
@@ -124,15 +129,15 @@ function MypageMain() {
 
   // Tab 4(MyComment) : 내가 작성한 댓글 데이터 get 요청
   const getMyCommentData = async () => {
-    try {
-      const res = await BASE_API.get(`/comment`);
-      setMyCommentData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
+    // try {
+    //   const res = await BASE_API.get(`/comment`);
+    //   setMyCommentData(res.data);
+    // } catch (err) {
+    //   console.error(err);
+    // }
   };
   useEffect(() => {
-    getMyCommentData();
+    // getMyCommentData();
   }, []);
 
   // 마이 페이지 탭 리스트
@@ -140,7 +145,6 @@ function MypageMain() {
     { feel: "내 정보" },
     { feel: "나의 다이어리" },
     { feel: "좋아한 다이어리" },
-    { feel: "작성한 댓글" },
   ];
 
   // 탭 선택 이벤트 핸들러
@@ -148,6 +152,7 @@ function MypageMain() {
     setCurrentTab(index);
   };
 
+  const uuid = uuidv4
   return (
     <>
       <ListTab>
@@ -159,6 +164,7 @@ function MypageMain() {
               onClick={() => selectTabHandler(index)}
             >
               <div className='el'>{tab.feel}</div>
+              
             </li>
           );
         })}
@@ -166,21 +172,22 @@ function MypageMain() {
       <MypageContainer>
         {currentTab === 0 ? (
           <InfoContainer>
-            {Object.values(userData).map((value: any) => {
-              return <MyInfo list={value} key={value.userId} getUserData={getUserData} />;
-            })}
+            {/* {userData.map((value: any) => {
+              return <MyInfo list={value} key={value.userId} getUserData={UserData} />;
+            })} */}
+          { userData.length > 1 && <MyInfo list={userData} />}
           </InfoContainer>
         ) : currentTab === 1 ? (
           <DiaryContainer>
             {myDiaryData.slice(offset, offset + LIMIT_COUNT).map((value) => {
-              return <MyDiary list={value} key={value.diaryId} />;
+              return <MyDiary  list={value} key={value.diaryId} />;
             })}
           </DiaryContainer>
         ) : currentTab === 2 ? (
           <DiaryContainer>
-            {myLikeDiaryData.slice(offset, offset + LIMIT_COUNT).map((value) => {
+            {/* {myLikeDiaryData.slice(offset, offset + LIMIT_COUNT).map((value) => {
               return <MyLikeDiary list={value} key={value.diaryId} />;
-            })}
+            })} */}
           </DiaryContainer>
         ) : (
           <CommentContainer>
@@ -204,3 +211,14 @@ function MypageMain() {
 }
 
 export default MypageMain;
+
+
+  // Tab 1(MyInfo) : 나의 유저 정보만 불러오는 get 요청
+  // const UserData =  () => {
+    // userState((user:any) => console.log(user.uid))
+    // userState((user:any) =>setUserUid(user.uid))
+    //   .then(() => console.log(userUid))
+      // .then(() => getUserData(userUid))
+      // .then((res:any)=> setUserData(res))
+        // .then((res:any)=> console.log('res',res))
+  // };

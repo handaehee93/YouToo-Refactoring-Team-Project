@@ -3,34 +3,35 @@ import CommentList from "./CommentList";
 import DetailPlayList from "./DetailPlayList";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { DiaryData, DiaryData2, DiaryDataProps } from "../../util/Type";
+import { DiaryData} from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { RiErrorWarningLine } from "react-icons/ri";
 import DOMPurify from "dompurify";
 import { useContext } from "react";
 import { myContext } from "../../theme";
-import { getUserData, removeFromDiary, userState, writeComment } from '../../firebase';
+import { getUserData, postComment, removeFromDiary, userState} from '../../firebase';
 import { useAppSelector } from '../../redux/store/hooks';
 import { selectLogin } from '../../redux/slice/LoginSlice';
-
+import { v4 as uuidv4 } from 'uuid';
 
 // commentId
 interface Props {
   list: DiaryData;
   getDetailData: React.Dispatch<React.SetStateAction<object>>;
   listUid:string
+
 }
 
-function DetailList({ list, getDetailData, listUid }: Props) {
+function DetailList({ list, getDetailData, listUid}: Props) {
   const [userUid, setUserUid] = useState('')
   const [currentUser, setCurrentUser] = useState()
-  console.log('디테일리스트에서 받아온 listUid',listUid)
+
   // 페이지가 렌더링이 되면 userState함수가 실행이 되면서 user의 정보를 받아옴
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
   },[])
-  // console.log('uid',userUid)
+
   
   
   const [checkLike, setCheckLike] = useState<boolean>(false);
@@ -38,28 +39,21 @@ function DetailList({ list, getDetailData, listUid }: Props) {
   const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
   const [ruleModal, setRuleModal] = useState<boolean>(false);
 
-  const commentData = [list.comments]; // 선택한 다이어리의 코멘트 정보
-  // const arrComment = Object.values(commentData)
-  // console.log('commentDAta', commentData)
-  // const playlistData = list.playlists; // 선택한 플레이리스트의 정보
 
   const { diaryId } = useParams();
   const navigate = useNavigate();
-  // const { currentUser }: any = useContext(myContext);
+
   useEffect(() => {
     getUserData(userUid)
     .then(res=> res?.map((us:any) => {
       setCurrentUser(us)
     }))
+
   })
 
   const myDiary: boolean = list.userNickname === currentUser
-  // const myDiary = true
 
-  
-  
-  
-  
+
   
   // 좋아요 버튼
   const plusLikeCount = async () => {
@@ -101,24 +95,10 @@ function DetailList({ list, getDetailData, listUid }: Props) {
   // 선택한 다이어리 delete 요청
   const postDelete = async () => {
     removeFromDiary(userUid, listUid)
-    // await TOKEN_API.delete(`/diary/${diaryId}`);
-    // const scrollY = document.body.style.top;
-    // document.body.style.cssText = "";
-    // window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
-    // navigate("/");
   };
 
-  // 댓글 post 요청
-  const submitHandler = async () => {
-    writeComment(userUid)
-    // const newComment = {
-    //   diaryId: diaryId,
-    //   body: commentBody,
-    // };
-    // const res = await TOKEN_API.post(`/comment`, newComment);
-    // getDetailData(res.data);
-    // setCommentBody("");
-  };
+
+
 
   // 댓글 작성 체인지 이벤트
   const changeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -145,9 +125,9 @@ function DetailList({ list, getDetailData, listUid }: Props) {
 
   // 수정 페이지로 이동
   const moveEditDiary = () => {
-    navigate(`/EditDiary/${list.diaryId}`,{state: {list,listUid}});
+    list && navigate(`/EditDiary/${list.diaryId}`,{state: {list,listUid}});
   };
-
+  const uuid = uuidv4()
   return (
     <DetailMainContainer>
       <DetailMainWrapper>
@@ -196,7 +176,7 @@ function DetailList({ list, getDetailData, listUid }: Props) {
           </ButtonArea>
         </TitleArea>
         <AlbumCoverArea>
-          <img className='coverImg' src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
+          <img className='coverImg' src={list && list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
           <InfoArea>
             <UserInfo>
               <span className='text'>등록자</span>
@@ -206,6 +186,14 @@ function DetailList({ list, getDetailData, listUid }: Props) {
               <span className='text'>등록일</span>
               {list.createdAt.substring(0, 10)}
             </UserInfo>
+            <UserInfoTag>
+            <div>
+              <p>태그</p>
+            </div>
+            <div className='selected'>
+              {list.tag}
+            </div>
+            </UserInfoTag>
           </InfoArea>
         </AlbumCoverArea>
         <AlbumInfoArea>
@@ -221,7 +209,7 @@ function DetailList({ list, getDetailData, listUid }: Props) {
             return <DetailPlayList list={value} key={index} />;
           })}
         </PlayListArea>
-        <CommentInputArea>
+        {/* <CommentInputArea>
           <div className='commentTitle'>
             <span className='commentCount'>댓글 ({commentData.length})</span>
             <div className='commentRule' onClick={openRuleModalHandler}>
@@ -261,11 +249,11 @@ function DetailList({ list, getDetailData, listUid }: Props) {
               등록
             </button>
           </TextArea>
-          {/* {commentData?.map((value) => {
+          {commentData?.map((value) => {
             console.log('value', value)
-            return <CommentList list={value} key={value.commentId} getDetailData={getDetailData} />;
-          })} */}
-        </CommentInputArea>
+            return <CommentList list={value} key={uuid} getDetailData={getDetailData} />;
+          })}
+        </CommentInputArea> */}
       </DetailMainWrapper>
     </DetailMainContainer>
   );
@@ -277,6 +265,7 @@ export default DetailList;
 const DetailMainContainer = styled.div`
   display: flex;
   justify-content: center;
+
 `;
 
 const DetailMainWrapper = styled.div`
@@ -458,6 +447,16 @@ const UserInfo = styled.div`
   > .text {
     font-size: 13px;
     margin-right: 50px;
+  }
+`;
+const UserInfoTag = styled.div`
+  display:flex;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: ${(props) => props.theme.mainText};
+
+  > .selected {
+    margin-left:60px
   }
 `;
 

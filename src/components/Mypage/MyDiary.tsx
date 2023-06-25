@@ -3,14 +3,27 @@ import { useNavigate } from "react-router-dom";
 import { DiaryDataProps } from "../../util/Type";
 import { AiFillHeart } from "react-icons/ai";
 import { FaRegCommentDots } from "react-icons/fa";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { myContext } from "../../theme";
+import { getUidData, userState } from '../../firebase';
 
 function MyDiary({ list }: DiaryDataProps) {
+  console.log('마다',list)
   const { currentUser }: any = useContext(myContext);
-  const myDiary: boolean = list.userNickname === currentUser.nickname;
+  // const myDiary: boolean = list.userNickname === currentUser.nickname;
+  const myDiary: boolean = true
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // userState((user:any) => setUserUid(user.uid))
+    // userState((user:any) => console.log(user))
+  }, []);
+
+  useEffect(() => {
+    // getUidData(userUid)
+    //   .then(res=> console.log('나의',res))
+  })
 
   // 디테일 페이지로 이동
   const clickHandler = () => {
@@ -21,10 +34,10 @@ function MyDiary({ list }: DiaryDataProps) {
     <>
       {myDiary === true ? (
         <DiaryList.DiaryListContainer onClick={clickHandler}>
-          <DiaryList.Thumbnail src={list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' />
+          {/* <DiaryList.Thumbnail src={list && list.playlists[0]?.thumbnail} alt='첫번째 앨범 커버' /> */}
           <DiaryList.InfoArea>
             <div className='infoTitle'>{list.title}</div>
-            <div className='infoDate'>{list.createdAt.substring(0, 10)}</div>
+            {/* <div className='infoDate'>{list.createdAt.substring(0, 10)}</div> */}
             {/* <DiaryList.Tag>
           {list.tag.map((value, index) => {
             return <li key={index}>{value}</li>;

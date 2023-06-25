@@ -42,7 +42,7 @@ function LoginHeader() {
         <Logo onClick={closeDropdown}>
           <Link to='/'>
             <img src={mainIcon} alt='mainIcon' />
-            나만의 작은 음악 다이어리
+            Shelby
           </Link>
         </Logo>
         <div className='buttonArea'>

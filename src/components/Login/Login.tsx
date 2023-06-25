@@ -36,9 +36,8 @@ function Login() {
           // dispatch(loginSlice.actions.login())
         } else {
           getUserData(user.uid)
-            // .then((res:any)=> console.log(res[1]))
-            // .then((res:any) => dispatch(logined(user)))
             .then((res:any) => dispatch(logined(res && res[1])))
+            // .then((res:any) => console.log('로그인res',res))
             .then(()=>  navigate('/'))
 
         }

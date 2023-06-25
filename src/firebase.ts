@@ -81,6 +81,7 @@ export async function getUserData (uid:string){
   .then((snapshot) => {
     if (snapshot.exists()) {
       // console.log('firebase함수',snapshot.val());
+      // return snapshot.val()
       const us = snapshot.val()
       return Object.values(us)
     } else {
@@ -92,63 +93,37 @@ export async function getUserData (uid:string){
 
 
 // userstate
-export  async function userState (callback:any) {
+export   function userState (callback:any) {
   return onAuthStateChanged(auth,  async (user:any) => {
     callback(user)
-    // console.log(user.email)
-    // return user.email
-    // if (user) {
-    //   // User is signed in, see docs for a list of available properties
-    //   // https://firebase.google.com/docs/reference/js/firebase.User
-    //   const uid = user.uid;
-    //   const userEmail = user.email
-    //     cb(user)
-    //   // console.log(user.email)
-      
-    //   // ...
-    // } else {
-    //   // User is signed out
-    //   // ...
-    // }
   })
-  
 }
 
 // 데이터 post하는 함수
-export function writeDiaryData(userUid:any,title:string, body:string, playlists:any, today:string, nickname: string , uidData:any) {
+export function writeDiaryData(userUid:any,title:string, body:string, playlists:any, today:string, nickname: string , uidData:any,newTag:string) {
   const uuid = uuidv4()
-  set(ref(db, `diarys/${userUid}/${uuid}`), {
+  set(ref(db, `diarys/${userUid}/${newTag}`), {
       diaryId: uuid,
       title: title,
       body: body,
-      viewCount: 0,
+      // viewCount: 0,
       likeCount: 0,
       createdAt: today,
       modifiedAt: "",
       userNickname: nickname,
+      tag:newTag,
       playlists: playlists,
-      comments: {
-        commentId: userUid + 1,
-        diaryId: userUid,
-        body: "",
-        createdAt: "",
-        modifiedAt: "",
-        userNickname: '한대희'
-      }
+      // comments: [{
+      //   commentId: uuid + 1,
+      //   diaryId: uuid,
+      //   body: "",
+      //   createdAt: "",
+      //   modifiedAt: "",
+      //   userNickname: nickname
+      // }]
   });
 }
-export function writeComment(userId:any) {
-  set(ref(db,`diarys/${userId}`), {
-    comments:  {
-      "commentId": userId + 1,
-      "diaryId": userId,
-      "body": "댓글 등록",
-      "createdAt": "2023-03-22T11:00:00",
-      "modifiedAt": "2023-03-22T11:03:00",
-      "userNickname": '한대희'
-  }
-});
-}
+
 
 
 //데이터 불러오는 함수
@@ -156,7 +131,7 @@ export async function getData () {
 return get(ref(db, `diarys`))
 .then((snapshot) => {
   if (snapshot.exists()) {
-    console.log(snapshot.val());
+    // console.log(snapshot.val());
     return Object.values(snapshot.val())
   } else {
     console.log("No data available");
@@ -172,7 +147,7 @@ export async function getUidData (userUid:string) {
   return get(ref(db, `diarys/${userUid}`))
   .then((snapshot) => {
     if (snapshot.exists()) {
-      console.log(snapshot.val());
+      // console.log(snapshot.val());
       return Object.values(snapshot.val())
     } else {
       console.log("No data available");
@@ -186,6 +161,11 @@ export async function getUidData (userUid:string) {
   // 다이어리 수정 함수
   export async function patchDiary (userUid:string, listUid: string, list:any) {
     return set(ref(db, `diarys/${userUid}/${listUid}`),list )
+  }
+
+  //댓글 등록 함수
+  export async function postComment (userUid:string, tag: string, list:any) {
+    return set(ref(db, `diarys/${userUid}/${tag}`),list )
   }
 
   // 다이어리 삭제 함수

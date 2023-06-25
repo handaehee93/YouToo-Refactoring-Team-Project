@@ -11,7 +11,7 @@ export interface DiaryData {
   userNickname: string;
   comments: CommentData
   playlists: PlaylistData[];
-  tag: string[];
+  tag: string;
 }
 export interface DiaryData2 {
   diaryId: string;

@@ -82,8 +82,8 @@ function Carousel() {
       <FirstSlide>
         <ContentArea>
           <div className='promotionTitle'>
-            <div className='mainTitle'>혼자 듣기 아까웠던 숨은 명곡들</div>
-            <div className='subTitle'>이제 나만의 작은 음악 다이어리에서 같이 들어요 🎵</div>
+            <div className='mainTitle'>다시 보고 싶은 유튜브 영상을 저장하고</div>
+            <div className='subTitle'>ShelV 에서 공유해 봐요 ❤️</div>
           </div>
           <div className='promotionImg'>
             <img src={firstcarousel} alt='listen music' />

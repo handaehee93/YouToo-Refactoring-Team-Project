@@ -4,7 +4,7 @@ import { CommentData2 } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
 import { useContext } from "react";
 import { myContext } from "../../theme";
-import { getUserData, userState, writeComment } from '../../firebase';
+import { getUserData, userState } from '../../firebase';
 
 const CommentListContainer = styled.li`
   display: flex;
@@ -187,7 +187,7 @@ function CommentList({ list, getDetailData }: CommentDataPropss) {
 
   // 댓글 patch 요청
   const changeComment = async () => {
-    writeComment(userUid)
+    // writeComment(userUid)
     // const newComment = {
     //   diaryId: list.diaryId,
     //   commentId: list.commentId,
