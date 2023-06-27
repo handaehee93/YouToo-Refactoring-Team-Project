@@ -75,9 +75,6 @@ const CommentContainer = styled.ul`
 function MypageMain() {
   const [userUid,setUserUid] = useState('')
   const [userData, setUserData] = useState<UserData[]>([]);
-  const [myDiaryData, setMyDiaryData] = useState<DiaryData[]>([]);
-  const [myLikeDiaryData, setLikeDiaryData] = useState<DiaryData[]>([]);
-  const [myCommentData, setMyCommentData] = useState<CommentData[]>([]);
   const [currentTab, setCurrentTab] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const LIMIT_COUNT: number = 20;
@@ -85,23 +82,12 @@ function MypageMain() {
 
 
 
-  
+  // 로그인 유저 uid 가져오기
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
   }, []);
 
-  // Tab 2(MyDiary) : 나의 다이어리 데이터 get 요청
-  const getMyDiaryData = async () => {
-    getUidData(userUid)
-    .then(res=> console.log('나의',res))
-    // try {
-    //   const res = await BASE_API.get(`/diary`);
-    //   setMyDiaryData(res.data);
-    // } catch (err) {
-    //   console.error(err);
-    // }
-  };
-
+  // 로그인한 user가 작성한 diary 가져오기
   useEffect(() => {
     userUid && getUserData(userUid)
     .then((res:any)=> {
@@ -109,42 +95,10 @@ function MypageMain() {
     })
   }, [userUid]);
 
-  useEffect(() => {
-    getUidData(userUid)
-    .then((res:any) => setMyDiaryData(res))
-  },[])
-  console.log(myDiaryData)
-  // Tab 3(MyLikeDiary) : 내가 좋아요 한 다이어리 데이터 get 요청
-  // const getLikeData = async () => {
-  //   try {
-  //     const res = await axios.get(`http://localhost:3001/likediary`);
-  //     setLikeDiaryData(res.data);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getLikeData();
-  // }, []);
-
-  // Tab 4(MyComment) : 내가 작성한 댓글 데이터 get 요청
-  const getMyCommentData = async () => {
-    // try {
-    //   const res = await BASE_API.get(`/comment`);
-    //   setMyCommentData(res.data);
-    // } catch (err) {
-    //   console.error(err);
-    // }
-  };
-  useEffect(() => {
-    // getMyCommentData();
-  }, []);
-
   // 마이 페이지 탭 리스트
   const tabArr = [
-    { feel: "내 정보" },
-    { feel: "나의 다이어리" },
-    { feel: "좋아한 다이어리" },
+    { feel: "마이 페이지" }
+    // { feel: "나의 다이어리" },
   ];
 
   // 탭 선택 이벤트 핸들러
@@ -164,48 +118,15 @@ function MypageMain() {
               onClick={() => selectTabHandler(index)}
             >
               <div className='el'>{tab.feel}</div>
-              
             </li>
           );
         })}
       </ListTab>
       <MypageContainer>
-        {currentTab === 0 ? (
           <InfoContainer>
-            {/* {userData.map((value: any) => {
-              return <MyInfo list={value} key={value.userId} getUserData={UserData} />;
-            })} */}
-          { userData.length > 1 && <MyInfo list={userData} />}
+            { userData.length > 1 && <MyInfo list={userData} />}
           </InfoContainer>
-        ) : currentTab === 1 ? (
-          <DiaryContainer>
-            {myDiaryData.slice(offset, offset + LIMIT_COUNT).map((value) => {
-              return <MyDiary  list={value} key={value.diaryId} />;
-            })}
-          </DiaryContainer>
-        ) : currentTab === 2 ? (
-          <DiaryContainer>
-            {/* {myLikeDiaryData.slice(offset, offset + LIMIT_COUNT).map((value) => {
-              return <MyLikeDiary list={value} key={value.diaryId} />;
-            })} */}
-          </DiaryContainer>
-        ) : (
-          <CommentContainer>
-            {myCommentData.slice(offset, offset + LIMIT_COUNT).map((value) => {
-              return <MyComment list={value} key={value.commentId} />;
-            })}
-          </CommentContainer>
-        )}
       </MypageContainer>
-      <MypagePagination
-        myPageLength={myDiaryData.length}
-        myLikePageLength={myLikeDiaryData.length}
-        myCommentPageLength={myCommentData.length}
-        LIMIT_COUNT={LIMIT_COUNT}
-        page={page}
-        setPage={setPage}
-        currentTab={currentTab}
-      />
     </>
   );
 }
@@ -222,3 +143,36 @@ export default MypageMain;
       // .then((res:any)=> setUserData(res))
         // .then((res:any)=> console.log('res',res))
   // };
+
+
+//   <CommentContainer>
+//   {myCommentData.slice(offset, offset + LIMIT_COUNT).map((value) => {
+//     return <MyComment list={value} key={value.commentId} />;
+//   })}
+// </CommentContainer>
+
+{/* <DiaryContainer>
+{myLikeDiaryData.slice(offset, offset + LIMIT_COUNT).map((value) => {
+  return <MyLikeDiary list={value} key={value.diaryId} />;
+})}
+</DiaryContainer> */}
+
+{/* <DiaryContainer>
+{myDiaryData.slice(offset, offset + LIMIT_COUNT).map((value) => {
+  return <MyDiary  list={value} key={value.diaryId} />;
+})}
+</DiaryContainer> */}
+
+{/* {userData.map((value: any) => {
+              return <MyInfo list={value} key={value.userId} getUserData={UserData} />;
+            })} */}
+
+       {/* <MypagePagination
+        myPageLength={myDiaryData.length}
+        myLikePageLength={myLikeDiaryData.length}
+        myCommentPageLength={myCommentData.length}
+        LIMIT_COUNT={LIMIT_COUNT}
+        page={page}
+        setPage={setPage}
+        currentTab={currentTab}
+      /> */}

@@ -34,7 +34,7 @@ export async function  signUp (email:string, password:string, nickname:string) {
   return createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     const user = userCredential.user;
-    console.log('유아이디',user.uid)
+    console.log('회원가입유저정보',user)
     writeUserData(user.uid, user.email ,nickname)
     return user
   })
@@ -89,7 +89,10 @@ export async function getUserData (uid:string){
     }
   })
 }
-
+// 로그인 유저의 nickname을 변경할 수 있는 함수
+export async function patchNickname (userUid:string,patchUser:any)  {
+  return set(ref(db, `users/${userUid}`),patchUser)
+}
 
 
 // userstate
@@ -113,14 +116,6 @@ export function writeDiaryData(userUid:any,title:string, body:string, playlists:
       userNickname: nickname,
       tag:newTag,
       playlists: playlists,
-      // comments: [{
-      //   commentId: uuid + 1,
-      //   diaryId: uuid,
-      //   body: "",
-      //   createdAt: "",
-      //   modifiedAt: "",
-      //   userNickname: nickname
-      // }]
   });
 }
 
@@ -163,10 +158,7 @@ export async function getUidData (userUid:string) {
     return set(ref(db, `diarys/${userUid}/${listUid}`),list )
   }
 
-  //댓글 등록 함수
-  export async function postComment (userUid:string, tag: string, list:any) {
-    return set(ref(db, `diarys/${userUid}/${tag}`),list )
-  }
+
 
   // 다이어리 삭제 함수
   export async function removeFromDiary (userUid:string, listUid:string) {

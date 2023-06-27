@@ -7,7 +7,7 @@ import { BASE_API } from "../../util/API";
 function DetailMain() {
   const [detailData, setDetailData] = useState<DiaryData>();
 
-  // const { diaryId } = useParams();
+  
   const {state: {
     list, listUid
   }} = useLocation()

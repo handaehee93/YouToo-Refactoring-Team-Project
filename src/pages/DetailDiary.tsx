@@ -14,10 +14,10 @@ function DetailDiary() {
   // const LOG = JSON.stringify(LOGIN)
   // console.log('LOG',LOG.email)
 
-  const {state: {
-    list, listUid
-  }} = useLocation()
-  console.log('디테일 메인',list)
+  // const {state: {
+  //   list, listUid
+  // }} = useLocation()
+  // console.log('디테일 메인',list)
 
   return (
     <>

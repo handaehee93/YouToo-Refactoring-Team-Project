@@ -90,10 +90,12 @@ useEffect(() => {
           })} */}
           {
             !tagState && diaryData ? diaryData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
-              return <DiaryList list={data} key={idx} />;
+              let a = 0
+              return <DiaryList list={data} key={data.diaryId + a++} />;
             }):
             tagState && filterData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
-              return <DiaryList list={data} key={idx}/>;
+              let b = 0
+              return <DiaryList list={data} key={data.diaryId + b++}/>;
             })
             }
         </DiaryMainWrapper>

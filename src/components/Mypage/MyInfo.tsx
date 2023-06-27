@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { UserData } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
+import { getUserData, patchNickname, userState } from '../../firebase';
 
 
 
@@ -12,36 +13,25 @@ export interface Props {
 
 function MyInfo({ list }: Props) {
   console.log(list)
+  const [userUid, setUserUid] = useState<string>()
   const [userEmail, setUserEmail] = useState<string>()
   const [userNickname, setNickname] = useState<string>();
-
+  const [newNickname, setNewNickname] = useState<string>('')
+  const [editNickname, setEditNickname] = useState<boolean>(false);
+  const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
   useEffect(() => {
     setUserEmail( list[0])
     setNickname(list[1])
+    userState((user:any) => setUserUid(user.uid))
+    // getUserData()
   },[])
-  
-  const [editNickname, setEditNickname] = useState<boolean>(true);
-  // const [password, setPassword] = useState<string>(list.password);
-  const [editPassword, setEditPassword] = useState<boolean>(false);
-  const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
-
-  const fileInput = useRef<HTMLInputElement>(null);
+  console.log(newNickname)
   const navigate = useNavigate();
-
-  // 프로필 이미지 클릭 시 input으로 연결되는 이벤트
-  const clickProfile = () => {
-    fileInput.current?.click();
-  };
-
-  // 선택한 이미지 미리보기 이벤트
-  const saveImage = (e: any) => {
-    // setImage(URL.createObjectURL(e.target.files[0]));
-  };
-
-
 
   // 유저 닉네임 patch 요청
   const changeNickname = async () => {
+    const patchUser = [userEmail, newNickname]
+    userUid && patchNickname(userUid, patchUser)
     // const newNickname = {
     //   userId: list.userId,
     //   nickname: nickname,
@@ -52,31 +42,16 @@ function MyInfo({ list }: Props) {
     // setEditNickname(false);
   };
 
-  // 유저 패스워드 patch 요청
-  const changePassword = async () => {
-    // const newPassword = {
-    //   userId: list.userId,
-    //   nickname: list.nickname,
-    //   password: password,
-    // };
-    // const res = await TOKEN_API.patch(`/users/${list.userId}`, newPassword);
-    // getUserData(res.data);
-    // setEditPassword(false);
-  };
+
 
   // 유저 닉네임 변경 클릭 이벤트
   const onClickEditButton = () => {
     setEditNickname(!editNickname);
   };
 
-  // 유저 패스워드 변경 클릭 이벤트
-  const onClickPasswordButton = () => {
-    setEditPassword(!editPassword);
-  };
-
   // 유저 닉네임 변경 체인지 이벤트
   const onChangeEditInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // setNickname(e.target.value);
+    setNewNickname(e.target.value);
   };
 
   // 유저 패스워드 변경 체인지 이벤트
@@ -104,66 +79,31 @@ function MyInfo({ list }: Props) {
       <MySettingContainer>
         <PasswordWrapper>
           <div className='passwordTitle'>회원가입 이메일</div>
-          {editPassword ? (
-            <input
-              className='editPasswordArea'
-              type='text'
-              // value={password}
-              onChange={onChangePasswordInput}
-            ></input>
-          ) : (
-            <div className='passwordArea'>{userEmail && userEmail}</div>
-          )}
-          {editPassword ? (
-            <EditPasswordBtn onClick={changePassword}>저장</EditPasswordBtn>
-          ) : (
-            <EditPasswordBtn onClick={onClickPasswordButton}>수정</EditPasswordBtn>
-          )}
+          <div className='passwordArea'>{userEmail && userEmail}</div> 
         </PasswordWrapper>
           <WarningText>
             <div className='waringText'>회원가입한 이메일입니다.</div>
           </WarningText>
         <PasswordWrapper>
             <div className='passwordTitle'>닉네임</div>
-            {editPassword ? (
+            {editNickname ? (
               <input
                 className='editPasswordArea'
                 type='text'
-                // value={password}
-                onChange={onChangePasswordInput}
+                value={newNickname}
+                onChange={onChangeEditInput}
               ></input>
             ) : (
               <div className='passwordArea'>{userNickname}</div>
             )}
-            {editPassword ? (
-              <EditPasswordBtn onClick={changePassword}>저장</EditPasswordBtn>
+            {editNickname ? (
+              <EditPasswordBtn onClick={changeNickname}>저장</EditPasswordBtn>
             ) : (
-              <EditPasswordBtn onClick={onClickPasswordButton}>수정</EditPasswordBtn>
+              <EditPasswordBtn onClick={onClickEditButton}>수정</EditPasswordBtn>
             )}
           </PasswordWrapper>
             <WarningText>
-            <div className='waringText'>회원가입시 입력한 닉네임</div>
-            </WarningText>
-          <PasswordWrapper>
-            <div className='passwordTitle'>비밀번호</div>
-            {editPassword ? (
-              <input
-                className='editPasswordArea'
-                type='text'
-                // value={password}
-                onChange={onChangePasswordInput}
-              ></input>
-            ) : (
-              <div className='passwordArea'>********</div>
-            )}
-            {editPassword ? (
-              <EditPasswordBtn onClick={changePassword}>저장</EditPasswordBtn>
-            ) : (
-              <EditPasswordBtn onClick={onClickPasswordButton}>수정</EditPasswordBtn>
-            )}
-          </PasswordWrapper>
-            <WarningText>
-              <div className='waringText'>로그인 시 사용되는 비밀번호입니다.</div>
+              <div className='waringText'>회원가입시 입력한 닉네임</div>
             </WarningText>
       </MySettingContainer>
       <MyWithdrawalContainer>
@@ -491,3 +431,23 @@ const WithdrawalModalView = styled.div`
     // setImage(res.data);
     // window.location.reload();
   };
+
+
+            {/* <PasswordWrapper>
+            <div className='passwordTitle'>비밀번호</div>
+            {editPassword ? (
+              <input
+                className='editPasswordArea'
+                type='text'
+                value={password}
+                onChange={onChangePasswordInput}
+              ></input>
+            ) : (
+              <div className='passwordArea'>********</div>
+            )}
+            {editPassword ? (
+              <EditPasswordBtn onClick={changePassword}>저장</EditPasswordBtn>
+            ) : (
+              <EditPasswordBtn onClick={onClickPasswordButton}>수정</EditPasswordBtn>
+            )}
+          </PasswordWrapper> */}

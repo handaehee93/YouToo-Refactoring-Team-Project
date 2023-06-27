@@ -10,7 +10,7 @@ import { RiErrorWarningLine } from "react-icons/ri";
 import DOMPurify from "dompurify";
 import { useContext } from "react";
 import { myContext } from "../../theme";
-import { getUserData, postComment, removeFromDiary, userState} from '../../firebase';
+import { getUserData, removeFromDiary, userState} from '../../firebase';
 import { useAppSelector } from '../../redux/store/hooks';
 import { selectLogin } from '../../redux/slice/LoginSlice';
 import { v4 as uuidv4 } from 'uuid';
