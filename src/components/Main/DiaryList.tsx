@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { DiaryData, DiaryDataProps, DiaryDataProps2 } from "../../util/Type";
+import { DiaryData} from "../../util/Type";
 import { AiFillHeart } from "react-icons/ai";
 import { FaRegCommentDots } from "react-icons/fa";
 import DiaryCard from './DiaryCard';
@@ -9,18 +9,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
   list: DiaryData
-
 }
 function DiaryList({ list }:Props) {
   const navigate = useNavigate();
-  // const arr = Array(list)
-  // console.log('arr',arr)
+
   const list2 = Object.values(list)
   const listUid = Object.keys(list)
 
-  // console.log('DiaryMain에서 props로 전달한 데이터',list)
-  // console.log('DiaryMain에서 props로 전달한 데이터의 value',list2)
-  // console.log('DiaryMain에서 props로 전달한 데이터의 키',listUid)
 const uuid = uuidv4()
   return (
     <>
@@ -29,13 +24,6 @@ const uuid = uuidv4()
           return <DiaryCard list={list1} key={list1.diaryId} listUid={listUid[idx]} />
         })
       }
-      {/* {
-        list2.map((list1) => {
-          return listUid.map((uid,idx) => {
-            return <DiaryCard list={list1} listUid={uid} key={list1.diaryId}/>
-          })
-        })
-      } */}
     </>
 
   );
@@ -87,20 +75,6 @@ export const InfoArea = styled.div`
   }
 `;
 
-// export const Tag = styled.ul`
-//   display: flex;
-//   font-size: 12px;
-//   font-weight: 500;
-//   color: #757170;
-//   list-style: none;
-
-//   > li {
-//     margin-right: 5px;
-//     padding: 3px 6px 3px 6px;
-//     border: 1px solid #d1d1d1;
-//     border-radius: 50px;
-//   }
-// `;
 
 export const UserArea = styled.div`
   display: flex;
@@ -108,7 +82,6 @@ export const UserArea = styled.div`
   justify-content: space-between;
   padding: 8px 15px 8px 15px;
   border-top: 0.5px solid ${(props) => props.theme.diaryInfoLine};
-  /* 태그 미구현으로 인한 임시로 위치 내림 */
   margin-top: 20px;
 `;
 

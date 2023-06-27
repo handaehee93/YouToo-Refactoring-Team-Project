@@ -1,9 +1,7 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
-import { UserData } from "../../util/Type";
-import { TOKEN_API } from "../../util/API";
-import { getUserData, patchNickname, removeUserData, userState } from '../../firebase';
+import { useState, useEffect } from "react";
+import {  patchNickname, removeUserData, userState } from '../../firebase';
 
 
 
@@ -12,7 +10,7 @@ export interface Props {
 }
 
 function MyInfo({ list }: Props) {
-  console.log(list)
+
   const [userUid, setUserUid] = useState<string>()
   const [userEmail, setUserEmail] = useState<string>()
   const [userNickname, setNickname] = useState<string>();
@@ -35,8 +33,6 @@ function MyInfo({ list }: Props) {
     window.location.reload();
   };
 
-
-
   // 유저 닉네임 변경 클릭 이벤트
   const onClickEditButton = () => {
     setEditNickname(!editNickname);
@@ -47,10 +43,6 @@ function MyInfo({ list }: Props) {
     setNewNickname(e.target.value);
   };
 
-  // 유저 패스워드 변경 체인지 이벤트
-  // const onChangePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setPassword(e.target.value);
-  // };
 
   // 회원 탈퇴 모달 오픈 이벤트 핸들러
   const openModalHandler = () => {
@@ -64,11 +56,6 @@ function MyInfo({ list }: Props) {
         navigate("/");
         window.location.reload();
       })
-    // await TOKEN_API.delete(`/users/${list.userId}`);
-    // localStorage.removeItem("accessToken");
-    // localStorage.removeItem("CURRENT_USER");
-    // navigate("/");
-    // window.location.reload();
   };
 
   return (
@@ -137,91 +124,91 @@ function MyInfo({ list }: Props) {
 }
 
 export default MyInfo;
-const MyInfoContainer = styled.div`
-  display: flex;
-  width: 100vw;
-  max-width: 900px;
-  font-size: 15px;
-`;
+// const MyInfoContainer = styled.div`
+//   display: flex;
+//   width: 100vw;
+//   max-width: 900px;
+//   font-size: 15px;
+// `;
 
-const ProfileImgWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid ${(props) => props.theme.diaryInfoLine};
-`;
+// const ProfileImgWrapper = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   border-right: 1px solid ${(props) => props.theme.diaryInfoLine};
+// `;
 
-const ProfileImg = styled.img`
-  width: 150px;
-  height: 150px;
-  border-radius: 100%;
-  margin: 0 20px 20px 20px;
-  cursor: pointer;
-  &:hover {
-    outline: 5px solid ${(props) => props.theme.mainColor};
-  }
-`;
+// const ProfileImg = styled.img`
+//   width: 150px;
+//   height: 150px;
+//   border-radius: 100%;
+//   margin: 0 20px 20px 20px;
+//   cursor: pointer;
+//   &:hover {
+//     outline: 5px solid ${(props) => props.theme.mainColor};
+//   }
+// `;
 
-const ImgInput = styled.input`
-  display: none;
-`;
+// const ImgInput = styled.input`
+//   display: none;
+// `;
 
-const ImgSubmitBtn = styled.button`
-  width: 140px;
-  height: 35px;
-  border-radius: 5px;
-  background-color: ${(props) => props.theme.mainColor};
-  color: ${(props) => props.theme.TagColor};
-  font-weight: 700;
-  border: none;
-  margin: 0 25px 0 25px;
-  cursor: pointer;
-  &:hover {
-    background-color: ${(props) => props.theme.buttonHover};
-  }
-`;
+// const ImgSubmitBtn = styled.button`
+//   width: 140px;
+//   height: 35px;
+//   border-radius: 5px;
+//   background-color: ${(props) => props.theme.mainColor};
+//   color: ${(props) => props.theme.TagColor};
+//   font-weight: 700;
+//   border: none;
+//   margin: 0 25px 0 25px;
+//   cursor: pointer;
+//   &:hover {
+//     background-color: ${(props) => props.theme.buttonHover};
+//   }
+// `;
 
-const NickNameWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  width: 100%;
-  height: 100px;
-  margin: 0 20px 0 20px;
+// const NickNameWrapper = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: flex-start;
+//   width: 100%;
+//   height: 100px;
+//   margin: 0 20px 0 20px;
 
-  > .editNicknameArea {
-    width: 100%;
-    font-size: 25px;
-    /* color: ${(props) => props.theme.mainText};
-    background-color: ${(props) => props.theme.background};
-    font-weight: 600;
-    border: 0.5px solid ${(props) => props.theme.editBorder};
-    border-radius: 4px;
-    padding: 10px 8px 10px 8px;
-    &:focus {
-      outline: none;
-    } */
-  }
+//   > .editNicknameArea {
+//     width: 100%;
+//     font-size: 25px;
+//     color: ${(props) => props.theme.mainText};
+//     background-color: ${(props) => props.theme.background};
+//     font-weight: 600;
+//     border: 0.5px solid ${(props) => props.theme.editBorder};
+//     border-radius: 4px;
+//     padding: 10px 8px 10px 8px;
+//     &:focus {
+//       outline: none;
+//     }
+//   }
 
-  > .nicknameArea {
-    color: ${(props) => props.theme.mainText};
-    width: 100%;
-    font-size: 30px;
-    font-weight: 700;
-  }
-`;
+//   > .nicknameArea {
+//     color: ${(props) => props.theme.mainText};
+//     width: 100%;
+//     font-size: 30px;
+//     font-weight: 700;
+//   }
+// `;
 
-const EditNicknameBtn = styled.button`
-  color: ${(props) => props.theme.mainText};
-  width: 40px;
-  margin-top: 10px;
-  border: none;
-  text-align: left;
-  background-color: transparent;
-  text-decoration: underline;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-`;
+// const EditNicknameBtn = styled.button`
+//   color: ${(props) => props.theme.mainText};
+//   width: 40px;
+//   margin-top: 10px;
+//   border: none;
+//   text-align: left;
+//   background-color: transparent;
+//   text-decoration: underline;
+//   font-size: 15px;
+//   font-weight: 600;
+//   cursor: pointer;
+// `;
 
 const MySettingContainer = styled.div`
   width: 100vw;

@@ -1,27 +1,23 @@
 import DetailMain from "../components/DetailDiary/DetailMain";
 import LoginHeader from "../components/LoginHeader";
 import LogoutHeader from "../components/LogoutHeader";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { myContext } from "../theme";
 import { useAppSelector } from '../redux/store/hooks';
 import { selectLogin } from '../redux/slice/LoginSlice';
 import { useLocation } from 'react-router-dom';
 
 function DetailDiary() {
-  // const { isLogin }: any = useContext(myContext);
-  const LOGIN = useAppSelector(selectLogin);
-  console.log('로그인',LOGIN)
-  // const LOG = JSON.stringify(LOGIN)
-  // console.log('LOG',LOG.email)
+  const [login, setLogin] = useState<string | undefined>()
 
-  // const {state: {
-  //   list, listUid
-  // }} = useLocation()
-  // console.log('디테일 메인',list)
+  useEffect(() => {
+      const userLogin = localStorage.getItem('login')
+      userLogin && setLogin(userLogin)
+    },[])
 
   return (
     <>
-      {LOGIN ? <LoginHeader /> : <LogoutHeader />}
+      {login ? <LoginHeader /> : <LogoutHeader />}
       <DetailMain />
     </>
   );

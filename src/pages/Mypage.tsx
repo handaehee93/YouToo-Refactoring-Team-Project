@@ -9,26 +9,16 @@ import { getUserData, userState } from '../firebase';
 import { UserData } from '../util/Type';
 
 function Mypage() {
-  const [userUid,setUserUid] = useState('')
-  const [userData, setUserData] = useState<UserData[]>([]);
-  
+  const [login, setLogin] = useState<string | undefined>()
 
-
-    // useEffect(() => {
-    //   userState((user:any) => setUserUid(user.uid))
-    // },[])
-
-
-    // useEffect(() => {
-    //   getUserData(userUid)
-    //     .then((res:any)=> setUserData(res))
-    // })
-
-  const LOGIN = useAppSelector(selectLogin);
+  useEffect(() => {
+      const userLogin = localStorage.getItem('login')
+      userLogin && setLogin(userLogin)
+    },[])
 
   return (
     <>
-      {LOGIN ? <LoginHeader /> : <LogoutHeader />}
+      {login ? <LoginHeader /> : <LogoutHeader />}
       <MypageMain />
     </>
   );

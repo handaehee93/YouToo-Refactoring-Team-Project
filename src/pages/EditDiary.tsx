@@ -1,22 +1,23 @@
 import EditMain from "../components/EditDiary/EditMain";
 import LoginHeader from "../components/LoginHeader";
 import LogoutHeader from "../components/LogoutHeader";
-import { useContext } from "react";
-import { myContext } from "../theme";
-import { useAppSelector } from '../redux/store/hooks';
-import { selectLogin } from '../redux/slice/LoginSlice';
+import { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
-function EditDiary() {
-
-  const LOGIN = useAppSelector(selectLogin);
+export default function EditDiary() {
   const {state: { list, listUid,setDiaryData }} = useLocation()
-  console.log('에딧 다이어리',list)
+  const [login, setLogin] = useState<string | undefined>()
+
+  useEffect(() => {
+      const userLogin = localStorage.getItem('login')
+      userLogin && setLogin(userLogin)
+    },[])
+  
   return (
     <>
-      {LOGIN ? <LoginHeader /> : <LogoutHeader />}
+      {login ? <LoginHeader /> : <LogoutHeader />}
       <EditMain list={list} setDiaryData={setDiaryData} listUid={listUid}/>
     </>
   );
 }
 
-export default EditDiary;
+

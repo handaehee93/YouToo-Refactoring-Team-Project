@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { DiaryData, DiaryDataProps, DiaryDataProps2 } from "../../util/Type";
+import { DiaryData} from "../../util/Type";
 import { AiFillHeart } from "react-icons/ai";
 import { FaRegCommentDots } from "react-icons/fa";
 

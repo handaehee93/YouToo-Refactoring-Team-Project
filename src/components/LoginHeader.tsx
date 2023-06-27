@@ -30,8 +30,7 @@ function LoginHeader() {
 
   // 로그아웃
   const logOut = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("CURRENT_USER");
+    localStorage.removeItem("login");
     navigate("/");
     window.location.reload();
   };
