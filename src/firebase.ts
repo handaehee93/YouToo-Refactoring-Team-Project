@@ -102,6 +102,11 @@ export   function userState (callback:any) {
   })
 }
 
+// 회원 탈퇴
+export async function removeUserData (userUid:string) {
+  return remove(ref(db, `users/${userUid}`))
+}
+
 // 데이터 post하는 함수
 export function writeDiaryData(userUid:any,title:string, body:string, playlists:any, today:string, nickname: string , uidData:any,newTag:string) {
   const uuid = uuidv4()
@@ -109,7 +114,6 @@ export function writeDiaryData(userUid:any,title:string, body:string, playlists:
       diaryId: uuid,
       title: title,
       body: body,
-      // viewCount: 0,
       likeCount: 0,
       createdAt: today,
       modifiedAt: "",

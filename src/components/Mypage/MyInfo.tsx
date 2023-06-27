@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { UserData } from "../../util/Type";
 import { TOKEN_API } from "../../util/API";
-import { getUserData, patchNickname, userState } from '../../firebase';
+import { getUserData, patchNickname, removeUserData, userState } from '../../firebase';
 
 
 
@@ -19,27 +19,20 @@ function MyInfo({ list }: Props) {
   const [newNickname, setNewNickname] = useState<string>('')
   const [editNickname, setEditNickname] = useState<boolean>(false);
   const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate()
+  
   useEffect(() => {
     setUserEmail( list[0])
     setNickname(list[1])
     userState((user:any) => setUserUid(user.uid))
-    // getUserData()
   },[])
-  console.log(newNickname)
-  const navigate = useNavigate();
 
   // 유저 닉네임 patch 요청
   const changeNickname = async () => {
     const patchUser = [userEmail, newNickname]
     userUid && patchNickname(userUid, patchUser)
-    // const newNickname = {
-    //   userId: list.userId,
-    //   nickname: nickname,
-    //   password: list.password,
-    // };
-    // const res = await TOKEN_API.patch(`/users/${list.userId}`, newNickname);
-    // getUserData(res.data);
-    // setEditNickname(false);
+    setEditNickname(false);
+    window.location.reload();
   };
 
 
@@ -55,9 +48,9 @@ function MyInfo({ list }: Props) {
   };
 
   // 유저 패스워드 변경 체인지 이벤트
-  const onChangePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // setPassword(e.target.value);
-  };
+  // const onChangePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setPassword(e.target.value);
+  // };
 
   // 회원 탈퇴 모달 오픈 이벤트 핸들러
   const openModalHandler = () => {
@@ -66,6 +59,11 @@ function MyInfo({ list }: Props) {
 
   // 회원 탈퇴 delete 요청
   const withDrawal = async () => {
+    userUid && removeUserData(userUid)
+      .then(()=> {
+        navigate("/");
+        window.location.reload();
+      })
     // await TOKEN_API.delete(`/users/${list.userId}`);
     // localStorage.removeItem("accessToken");
     // localStorage.removeItem("CURRENT_USER");
@@ -75,7 +73,6 @@ function MyInfo({ list }: Props) {
 
   return (
     <>
-
       <MySettingContainer>
         <PasswordWrapper>
           <div className='passwordTitle'>회원가입 이메일</div>
