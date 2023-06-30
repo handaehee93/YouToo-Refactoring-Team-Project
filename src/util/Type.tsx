@@ -1,4 +1,4 @@
-// import { Play } from '../components/Main/DiaryList';
+
 
 export interface DiaryData {
   diaryId: string;
@@ -37,18 +37,7 @@ export interface CommentData {
   modifiedAt: string;
   userNickname: string;
 }
-export interface CommentData2 {
-  commentId: number;
-  diaryId: number;
-  body: string;
-  createdAt: string;
-  modifiedAt: string;
-  userNickname: string;
-}
 
-export interface CommentDataProps {
-  list: CommentData;
-}
 
 export interface UserData {
   userId: number;

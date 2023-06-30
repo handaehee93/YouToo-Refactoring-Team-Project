@@ -1,17 +1,9 @@
-import MyDiary from "./MyDiary";
-import MypagePagination from "./MypagePagination";
-import MyLikeDiary from "./MyLikeDiary";
-import MyComment from "./MyComment";
+
 import MyInfo from "./MyInfo";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { DiaryData } from "../../util/Type";
-import { CommentData } from "../../util/Type";
 import { UserData } from "../../util/Type";
-import { BASE_API } from "../../util/API";
-import { useContext } from "react";
-import { myContext } from "../../theme";
-import { getUidData, getUserData, userState } from '../../firebase';
+import { getUserData, userState } from '../../firebase';
 import { v4 as uuidv4 } from 'uuid';
 const ListTab = styled.ul`
   display: flex;

@@ -2,6 +2,23 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { PlaylistDataProps } from "../../util/Type";
 
+
+
+export default function DetailPlayList({ list }: PlaylistDataProps) {
+  return (
+    <PlayListContainer>
+      <PlayListWrapper>
+        <Link to={list.url!} target='_blank'>
+          <ContentArea>
+            <img className='thumbnail' src={list.thumbnail} alt='썸네일' />
+            <div className='listTitle'>{list.title}</div>
+          </ContentArea>
+        </Link>
+      </PlayListWrapper>
+    </PlayListContainer>
+  );
+}
+
 const PlayListContainer = styled.li`
   display: flex;
   justify-content: center;
@@ -42,20 +59,3 @@ const ContentArea = styled.div`
     background-color: ${(props) => props.theme.playListHover};
   }
 `;
-
-function DetailPlayList({ list }: PlaylistDataProps) {
-  return (
-    <PlayListContainer>
-      <PlayListWrapper>
-        <Link to={list.url!} target='_blank'>
-          <ContentArea>
-            <img className='thumbnail' src={list.thumbnail} alt='썸네일' />
-            <div className='listTitle'>{list.title}</div>
-          </ContentArea>
-        </Link>
-      </PlayListWrapper>
-    </PlayListContainer>
-  );
-}
-
-export default DetailPlayList;

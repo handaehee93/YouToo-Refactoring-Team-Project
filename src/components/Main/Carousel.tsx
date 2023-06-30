@@ -19,26 +19,48 @@ const ContentArea = styled.div`
   display: flex;
   align-items: center;
   max-width: 1440px;
-  margin: auto;
+  margin: 0 auto;
   height: 100%;
+  @media screen and (max-width: 525px) {
+    height: 230px;
+  }
 
   > .promotionTitle {
     flex: 5;
-
-    > .mainTitle {
-      font-size: 31px;
-      font-weight: 800;
-      margin-bottom: 10px;
-      padding-left: 200px;
+    > .mobileTitle {
+      display:none;
     }
 
+    @media screen and (max-width: 1024px) {
+
+      > .mobileTitle {
+        flex: 5;
+        display:inherit;
+        margin-left:10px;
+        font-weight: 800;
+        font-size: 25px;
+        text-align:center;
+      }
+    }
+    @media screen and (max-width: 600px) {
+      >.mobileTitle {
+        flex:5;
+        font-size: 15px;
+        margin-top:50px;
+        margin-left:20px;
+
+      }
+    }
     > .subTitle {
       display: flex;
       align-items: center;
-      font-size: 22px;
-      font-weight: 500;
+      font-size: 25px;
+      font-weight: 700;
       padding-left: 200px;
-
+      
+      @media screen and (max-width: 1024px) {
+      display:none;
+    }
       > .musicIcon {
         margin-left: 5px;
       }
@@ -52,9 +74,10 @@ const ContentArea = styled.div`
       margin-left: 50px;
       height: 300px;
       object-fit: contain;
-
-      @media screen and (max-width: 1024px) {
-        display: none;
+      // 모바일에서 배너 이미지
+      @media screen and (max-width: 600px) {
+        margin-top: 50px;
+        width: 250px;
       }
     }
   }
@@ -78,34 +101,42 @@ function Carousel() {
   };
 
   return (
-    <StyledSlider {...settings}>
-      <FirstSlide>
-        <ContentArea>
-          <div className='promotionTitle'>
-            <div className='mainTitle'>다시 보고 싶은 유튜브 영상을 저장하고</div>
-            <div className='subTitle'>ShelV 에서 공유해 봐요 ❤️</div>
-          </div>
-          <div className='promotionImg'>
-            <img src={firstcarousel} alt='listen music' />
-          </div>
-        </ContentArea>
-      </FirstSlide>
-      <SecondSlide>
-        <ContentArea>
-          <div className='promotionTitle'>
-            <div className='mainTitle'>
-              평범한 플레이리스트가 아닌
-              <br />
-              추억이 담긴 나만의 음악 다이어리
+    <div>
+      <StyledSlider {...settings}>
+        <FirstSlide>
+          <ContentArea>
+            <div className='promotionTitle'>
+              <div className='subTitle'>다시 보고 싶은 YouTube 영상을</div>
+              <div className='subTitle'>YouToo에서 공유해 보세요</div>
+              <div className='mobileTitle'>
+                <div>유튜브 영상 공유 플랫폼</div>
+                <div>YouToo</div>
+              </div>
+
             </div>
-            <div className='subTitle'>소중했던 순간을 남겨보세요 ✏️</div>
-          </div>
-          <div className='promotionImg'>
-            <img src={secondcarousel} alt='love music' />
-          </div>
-        </ContentArea>
-      </SecondSlide>
-    </StyledSlider>
+            <div className='promotionImg'>
+              <img src={firstcarousel} alt='listen music' />
+            </div>
+          </ContentArea>
+        </FirstSlide>
+        <SecondSlide>
+          <ContentArea>
+            <div className='promotionTitle'>
+              <div className='subTitle'>함께 보고 싶은 YouTube 영상을</div>
+              <div className='subTitle'>YouToo에서 공유해 보세요</div>
+              <div className='mobileTitle'>
+                <div>너도 한번 봐봐 ~!</div>
+                <div>YouToo</div>
+              </div>
+            </div>
+            <div className='promotionImg'>
+              <img src={secondcarousel} alt='love music' />
+            </div>
+          </ContentArea>
+        </SecondSlide>
+      </StyledSlider>
+    </div>
+
   );
 }
 

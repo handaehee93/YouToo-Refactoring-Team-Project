@@ -1,10 +1,10 @@
 import DetailList from "./DetailList";
 import { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 import { DiaryData } from "../../util/Type";
-import { BASE_API } from "../../util/API";
 
-function DetailMain() {
+
+export default function DetailMain() {
   const [detailData, setDetailData] = useState<DiaryData>();
 
 
@@ -15,7 +15,14 @@ function DetailMain() {
   useEffect(() => {
     list && setDetailData(list)
   },[])
-  return <>{detailData && <DetailList list={detailData} getDetailData={() => {}} listUid={listUid} />};</>;
+  return (
+  <>
+    {
+    detailData && 
+      <DetailList list={detailData}  listUid={listUid} />
+    };
+  </>
+  )
 }
 
-export default DetailMain;
+

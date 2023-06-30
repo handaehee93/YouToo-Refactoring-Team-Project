@@ -2,24 +2,23 @@ import * as NewMain from "../NewDiary/NewMain";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DiaryData, DiaryDataProps } from "../../util/Type";
-import { TOKEN_API } from "../../util/API";
+
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import EditPlayList from "./EditPlayList";
 import { PlaylistData } from "../../util/Type";
-import { getData, getUidData, getUserData, patchDiary, userState } from '../../firebase';
-import { useAppSelector } from '../../redux/store/hooks';
-import { selectLogin } from '../../redux/slice/LoginSlice';
+import { patchDiary, userState } from '../../firebase';
+
 
 interface Props {
   list:DiaryData
   listUid:string
   setDiaryData:any
 }
-function EditList({ list, listUid , setDiaryData}: Props) {
+export default function EditList({ list, listUid }: Props) {
   const [userUid, setUserUid] = useState('')
-  console.log('수정페이지전체 데이터', list)
+
 
   const [editTitle, setEditTitle] = useState<string>(list.title);
   const [editBody, setEditBody] = useState<string>(list.body);
@@ -140,7 +139,7 @@ function EditList({ list, listUid , setDiaryData}: Props) {
           />
         </NewMain.AlbumInfoArea>
         <NewMain.PlayListArea>
-          <div className='playTitle'>다이어리 수록곡</div>
+          <div className='playTitle'>유튜브 링크</div>
           <NewMain.UrlInput>
             <input
               value={editUrl}
@@ -167,4 +166,4 @@ function EditList({ list, listUid , setDiaryData}: Props) {
   );
 }
 
-export default EditList;
+

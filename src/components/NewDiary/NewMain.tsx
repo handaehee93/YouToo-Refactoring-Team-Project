@@ -79,7 +79,6 @@ useEffect(() => {
       const res =
         await axios.get(`https://www.googleapis.com/youtube/v3/videos?id=${id}&key=${process.env.REACT_APP_YOUTUBE_API_KEY}
       &part=snippet`);
-      console.log('res',res)
       return res.data.items[0]?.snippet;
     } catch (err) {
       console.error(err);
@@ -90,7 +89,6 @@ useEffect(() => {
   const addPlayList = () => {
     const musicInfo: PlaylistData = {};
     const urlId = getVideoId(newUrl);
-    // console.log(urlId)
     getYoutubeData(urlId)
       .then((res) => {
         musicInfo.channelId = res.channelId;
@@ -141,16 +139,14 @@ useEffect(() => {
             <UserInfoTag>
                 <span className='tag'>태그</span>
                 <div className='drop'>
-                  <select onChange={(e) => addCategory(e.target.value)} required>
+                  <select className='dropTag' onChange={(e) => addCategory(e.target.value)} required>
                     <option value=''>태그 선택</option>
                     <option value='음악'>음악</option>
                     <option value='스포츠'>스포츠</option>
-                    <option value='교육'>교육</option>
                     <option value='예능'>예능</option>
                     <option value='요리'>요리</option>
                     <option value='교양'>교양</option>
                     <option value='테크'>테크</option>
-                    <option value='먹방'>먹방</option>
                     <option value='기타'>기타</option>
                   </select>
                 </div>
@@ -169,7 +165,7 @@ useEffect(() => {
           />
         </AlbumInfoArea>
         <PlayListArea>
-          <div className='playTitle'>다이어리 수록곡</div>
+          <div className='playTitle'>유튜브 링크</div>
           <UrlInput>
             <input
               value={newUrl}
@@ -289,12 +285,21 @@ export const UserInfoTag = styled.div`
   > .tag {
     font-size: 13px;
     margin-right: 50px;
+    @media (max-width: 400px) {
+    margin-right: 10px;
+  }
   }
   >.drop {
-    margin-left:10px
+    margin-left:10px;
+    @media (max-width: 400px) {
+    margin-left: 20px
+  }
   }
   > .selected {
     margin-left:50px;
+    @media (max-width: 400px) {
+      display:none;
+  }
   }
 `;
 

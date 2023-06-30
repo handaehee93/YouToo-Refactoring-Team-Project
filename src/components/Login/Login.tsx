@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useNavigate, Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
-import { BASE_API } from "../../util/API";
+
 import { getUserData, userLogin } from '../../firebase';
 import { useAppDispatch } from '../../redux/store/hooks';
 import { loginSlice, logined } from '../../redux/slice/LoginSlice';
@@ -94,6 +94,9 @@ const LoginContainer = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  @media screen and (max-width: 600px) {
+
+      }
 `;
 
 const Logo = styled.div`
@@ -118,6 +121,9 @@ const FormContainer = styled.form`
   border: none;
   border: 1px solid ${(props) => props.theme.disabledTagBorder};
   background-color: ${(props) => props.theme.disabledTagBackground};
+  @media screen and (max-width: 600px) {
+  width: 370px;
+}
 `;
 
 const EmailInput = styled.input`
@@ -191,6 +197,9 @@ const MoveSignup = styled.button`
   > .bold {
     font-weight: 500;
   }
+  @media screen and (max-width: 600px) {
+  width: 370px;
+}
 `;
 
 const Errormsg = styled.p`

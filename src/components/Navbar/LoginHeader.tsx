@@ -1,13 +1,12 @@
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { BASE_API } from "../util/API";
 import { GoTriangleDown } from "react-icons/go";
 import { BsFillSunFill, BsFillMoonStarsFill } from "react-icons/bs";
 import { useContext } from "react";
-import { myContext } from "../theme";
-import mainIcon from "../util/img/mainIcon.png";
-
+import { myContext } from "../../theme";
+import mainIcon from "../../util/img/mainIcon.png";
+import {FaUserAlt} from 'react-icons/fa'
 
 
 function LoginHeader() {
@@ -41,7 +40,7 @@ function LoginHeader() {
         <Logo onClick={closeDropdown}>
           <Link to='/'>
             <img src={mainIcon} alt='mainIcon' />
-            Shelby
+            YouToo
           </Link>
         </Logo>
         <div className='buttonArea'>
@@ -56,8 +55,10 @@ function LoginHeader() {
             <SubmitButton onClick={closeDropdown}>새 다이어리 등록</SubmitButton>
           </Link>
           <ProfileButton onClick={openDropdown}>
-            <Profile src={imageData.data && imageData.data.imageUrl} alt='헤더 프로필 이미지' />
+            <FaUserAlt className='userImage'/>
             <GoTriangleDown className='triangleDown' size={14} />
+            {/* <Profile src={imageData.data && imageData.data.imageUrl} alt='헤더 프로필 이미지' />
+            <GoTriangleDown className='triangleDown' size={14} /> */}
           </ProfileButton>
           {isOpen ? (
             <ul className='dropdown' onClick={closeDropdown}>
@@ -168,6 +169,10 @@ const ModeButton = styled.button`
   > .darkIcon {
     color: ${(props) => props.theme.mainText};
   }
+  @media screen and (max-width: 600px) {
+    margin-right: 0;
+    margin-left:10px;
+}
 `;
 
 const SubmitButton = styled.button`
@@ -185,9 +190,11 @@ const ProfileButton = styled.div`
   display: flex;
   align-items: center;
   margin-left: 10px;
-
+  >.userImage {
+    margin-right:10px
+  }
   > .triangleDown {
-    color: #787f84;
+    color: black;
   }
 `;
 

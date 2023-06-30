@@ -4,68 +4,55 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { DiaryData} from "../../util/Type";
 import { getData} from '../../firebase';
-
-
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { v4 as uuidv4 } from 'uuid';
 
 function DiaryMain() {
   const [diaryData, setDiaryData] = useState<DiaryData[]>([]);
   const [currentTab, setCurrentTab] = useState<number>(0); // 탭 이동 상태
   const [page, setPage] = useState<number>(1); // 현재 페이지 번호 (기본값: 1페이지부터 노출)
-  const LIMIT_COUNT: number = 20;
+  const LIMIT_COUNT: number = 12;
   const offset: number = (page - 1) * LIMIT_COUNT; // 각 페이지에서 첫 데이터의 위치(index) 계산
 
 const [selectTag, setSelectTag] = useState('')
 const [filterData, setFilter] = useState<DiaryData[]>([])
 const [tagState,setTagState] = useState(false)
-  
+
 useEffect(() => {
-    getData()
+  getData()
     .then((data:any)=> setDiaryData(data))
-  }, []);
-  console.log('다이어리 전체 데이터',diaryData)
-  const tagArr = [
-    { feel: "전체" },
-    { feel: "음악" },
-    { feel: "교양" },
-    { feel: "예능" },
-    { feel: "교육" },
-    { feel: "스포츠" },
-    { feel: "테크" },
-    { feel: "음식" },
-    { feel: "기타" },
-  ];
+},[])
+
+
+const selectTagHandler = (e:any,index:number) => {
+  setCurrentTab(index);
+  setSelectTag(e.target.value)
+  setTagState(true)
   
+  if(e.target.value === '전체') {
+    setFilter(diaryData)
+  } else {
+    const selectedTagData = diaryData && diaryData.filter((value) => Object.keys(value)[0] === e.target.value);
+    setFilter(selectedTagData)
+  }
+  
+};
+// console.log('다이어리 전체 데이터' ,diaryData)
+// console.log('필터된 데이터',filterData)
+// console.log('선택한 태그', selectTag)
 
-
-  // const diaryKeys = Object.values(diaryData)
-  // console.log('필터',diaryKeys)
-  // const tagOneData = diaryData && diaryData.filter((value) => Object.keys(value)[0] === '스포츠');
-  // const tagOneData = diaryData.filter((value) => value.tag === (tagArr[1].feel));
-  // console.log('tag',tagOneData)
-  // 태그 선택 이벤트 핸들러
-  // const selectTagHandler = (index: number) => {
-  //   setCurrentTab(index);
-    
-  // };
-  const selectTagHandler = (e:any,index:number) => {
-    setCurrentTab(index);
-    setSelectTag(e.target.value)
-    setTagState(true)
-    
-    if(e.target.value === '전체') {
-      setFilter(diaryData)
-    } else {
-      const selectedTagData = diaryData && diaryData.filter((value) => Object.keys(value)[0] === e.target.value);
-      setFilter(selectedTagData)
-    }
-
-  };
-  console.log('다이어리 전체 데이터' ,diaryData)
-  console.log('필터된 데이터',filterData)
-  console.log('선택한 태그', selectTag)
-
-  return (
-    <main>
+const tagArr = [
+  { feel: "전체" },
+  { feel: "음악" },
+  { feel: "교양" },
+  { feel: "예능" },
+  { feel: "스포츠" },
+  { feel: "테크" },
+  { feel: "요리" },
+  { feel: "기타" },
+];
+return (
+  <main>
       <ListTab>
 
         {tagArr.map((tab, index) => {
@@ -85,102 +72,21 @@ useEffect(() => {
       {/* data.diaryId */}
       <DiaryMainContainer>
         <DiaryMainWrapper>
-          {/* {diaryData && diaryData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
-            return <DiaryList list={data} key={idx} />;
-          })} */}
           {
             !tagState && diaryData ? diaryData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
               let a = 0
-              return <DiaryList list={data} key={data.diaryId + a++} />;
+              return <DiaryList list={data} key={data.diaryId} />;
             }):
             tagState && filterData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
               let b = 0
-              return <DiaryList list={data} key={data.diaryId + b++}/>;
+              return <DiaryList list={data} key={data.diaryId}/>;
             })
-            }
+          }
         </DiaryMainWrapper>
-        {/* {currentTab === 0 ? (
-          <DiaryMainWrapper>
-            {diaryData.slice(offset, offset + LIMIT_COUNT).map((value) => {
-              return <DiaryList list={value} key={value.diary_id} />;
-            })}
-          </DiaryMainWrapper>
-        ) : currentTab === 1 ? (
-          <DiaryMainWrapper>
-            {diaryData
-              .filter((value) => value.tag.includes(tagArr[1].feel))
-              .slice(offset, offset + LIMIT_COUNT)
-              .map((value) => {
-                return <DiaryList list={value} key={value.diary_id} />;
-              })}
-          </DiaryMainWrapper>
-        ) : currentTab === 2 ? (
-          <DiaryMainWrapper>
-            {diaryData
-              .filter((value) => value.tag.includes(tagArr[2].feel))
-              .slice(offset, offset + LIMIT_COUNT)
-              .map((value) => {
-                return <DiaryList list={value} key={value.diary_id} />;
-              })}
-          </DiaryMainWrapper>
-        ) : currentTab === 3 ? (
-          <DiaryMainWrapper>
-            {diaryData
-              .filter((value) => value.tag.includes(tagArr[3].feel))
-              .slice(offset, offset + LIMIT_COUNT)
-              .map((value) => {
-                return <DiaryList list={value} key={value.diary_id} />;
-              })}
-          </DiaryMainWrapper>
-        ) : currentTab === 4 ? (
-          <DiaryMainWrapper>
-            {diaryData
-              .filter((value) => value.tag.includes(tagArr[4].feel))
-              .slice(offset, offset + LIMIT_COUNT)
-              .map((value) => {
-                return <DiaryList list={value} key={value.diary_id} />;
-              })}
-          </DiaryMainWrapper>
-        ) : currentTab === 5 ? (
-          <DiaryMainWrapper>
-            {diaryData
-              .filter((value) => value.tag.includes(tagArr[5].feel))
-              .slice(offset, offset + LIMIT_COUNT)
-              .map((value) => {
-                return <DiaryList list={value} key={value.diary_id} />;
-              })}
-          </DiaryMainWrapper>
-        ) : currentTab === 6 ? (
-          <DiaryMainWrapper>
-            {diaryData
-              .filter((value) => value.tag.includes(tagArr[6].feel))
-              .slice(offset, offset + LIMIT_COUNT)
-              .map((value) => {
-                return <DiaryList list={value} key={value.diary_id} />;
-              })}
-          </DiaryMainWrapper>
-        ) : currentTab === 7 ? (
-          <DiaryMainWrapper>
-            {diaryData
-              .filter((value) => value.tag.includes(tagArr[7].feel))
-              .slice(offset, offset + LIMIT_COUNT)
-              .map((value) => {
-                return <DiaryList list={value} key={value.diary_id} />;
-              })}
-          </DiaryMainWrapper>
-        ) : (
-          <DiaryMainWrapper>
-            {diaryData
-              .slice(offset, offset + LIMIT_COUNT)
-              .filter((value) => value.tag.includes(tagArr[8].feel))
-              .map((value) => {
-                return <DiaryList list={value} key={value.diary_id} />;
-              })}
-          </DiaryMainWrapper>
-        )} */}
+
       </DiaryMainContainer>
       <Pagination
-        allPageLength={diaryData ? diaryData.length : 0}
+        allPageLength={diaryData ? filterData.length : 0}
         // tagOnePageLength={
         //   diaryData.filter((value) => value.tag.includes(tagArr[1].feel)).length
         // }
@@ -300,3 +206,5 @@ const DiaryMainWrapper = styled.ul`
 setDiaryData(data)
 console.log(data)})}}>getdata</button> */}
 {/* <button onClick={() => {writeComment(8)}}>addComment</button> */}
+
+

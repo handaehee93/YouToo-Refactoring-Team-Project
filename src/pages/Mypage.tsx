@@ -1,6 +1,6 @@
 import MypageMain from "../components/Mypage/MypageMain";
-import LoginHeader from "../components/LoginHeader";
-import LogoutHeader from "../components/LogoutHeader";
+import LoginHeader from "../components/Navbar/LoginHeader";
+import LogoutHeader from "../components/Navbar/LogoutHeader";
 import { useContext, useEffect, useState } from "react";
 import { myContext } from "../theme";
 import { useAppSelector } from '../redux/store/hooks';
@@ -12,9 +12,9 @@ function Mypage() {
   const [login, setLogin] = useState<string | undefined>()
 
   useEffect(() => {
-      const userLogin = localStorage.getItem('login')
-      userLogin && setLogin(userLogin)
-    },[])
+    const userLogin = localStorage.getItem('login')
+    userLogin && setLogin(userLogin)
+  }, [])
 
   return (
     <>

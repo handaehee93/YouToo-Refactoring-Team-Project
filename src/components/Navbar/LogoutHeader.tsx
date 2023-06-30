@@ -2,10 +2,9 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { BsFillSunFill, BsFillMoonStarsFill } from "react-icons/bs";
 import { useContext } from "react";
-import { myContext } from "../theme";
-import mainIcon from "../util/img/mainIcon.png";
-import { useAppSelector } from '../redux/store/hooks';
-// import { selectCount } from '../redux/slice/LoginSlice';
+import { myContext } from "../../theme";
+import mainIcon from "../../util/img/mainIcon.png";
+
 
 
 
@@ -18,7 +17,7 @@ function LogoutHeader() {
           <Link to='/'>
             {" "}
             <img src={mainIcon} alt='mainIcon' />
-            나만의 작은 음악 다이어리
+            YouToo
           </Link>
         </Logo>
         <div className='buttonArea'>
@@ -102,6 +101,9 @@ const ModeButton = styled.button`
   > .darkIcon {
     color: ${(props) => props.theme.mainText};
   }
+  @media screen and (max-width: 600px) {
+    margin-right: 0
+}
 `;
 
 const SubmitButton = styled.button`
@@ -113,6 +115,9 @@ const SubmitButton = styled.button`
   font-size: 15px;
   color: ${(props) => props.theme.mainText};
   cursor: pointer;
+  @media screen and (max-width: 600px) {
+    display:none;
+}
 `;
 
 const LoginButton = styled.button`
@@ -126,4 +131,7 @@ const LoginButton = styled.button`
   border: 1.5px solid ${(props) => props.theme.mainText};
   margin: 0 10px 0 20px;
   cursor: pointer;
+  @media screen and (max-width: 600px) {
+    margin-left: 0
+}
 `;

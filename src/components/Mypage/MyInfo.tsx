@@ -62,7 +62,7 @@ function MyInfo({ list }: Props) {
     <>
       <MySettingContainer>
         <PasswordWrapper>
-          <div className='passwordTitle'>회원가입 이메일</div>
+          <div className='passwordTitle'>이메일</div>
           <div className='passwordArea'>{userEmail && userEmail}</div> 
         </PasswordWrapper>
           <WarningText>
@@ -124,91 +124,6 @@ function MyInfo({ list }: Props) {
 }
 
 export default MyInfo;
-// const MyInfoContainer = styled.div`
-//   display: flex;
-//   width: 100vw;
-//   max-width: 900px;
-//   font-size: 15px;
-// `;
-
-// const ProfileImgWrapper = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   border-right: 1px solid ${(props) => props.theme.diaryInfoLine};
-// `;
-
-// const ProfileImg = styled.img`
-//   width: 150px;
-//   height: 150px;
-//   border-radius: 100%;
-//   margin: 0 20px 20px 20px;
-//   cursor: pointer;
-//   &:hover {
-//     outline: 5px solid ${(props) => props.theme.mainColor};
-//   }
-// `;
-
-// const ImgInput = styled.input`
-//   display: none;
-// `;
-
-// const ImgSubmitBtn = styled.button`
-//   width: 140px;
-//   height: 35px;
-//   border-radius: 5px;
-//   background-color: ${(props) => props.theme.mainColor};
-//   color: ${(props) => props.theme.TagColor};
-//   font-weight: 700;
-//   border: none;
-//   margin: 0 25px 0 25px;
-//   cursor: pointer;
-//   &:hover {
-//     background-color: ${(props) => props.theme.buttonHover};
-//   }
-// `;
-
-// const NickNameWrapper = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: flex-start;
-//   width: 100%;
-//   height: 100px;
-//   margin: 0 20px 0 20px;
-
-//   > .editNicknameArea {
-//     width: 100%;
-//     font-size: 25px;
-//     color: ${(props) => props.theme.mainText};
-//     background-color: ${(props) => props.theme.background};
-//     font-weight: 600;
-//     border: 0.5px solid ${(props) => props.theme.editBorder};
-//     border-radius: 4px;
-//     padding: 10px 8px 10px 8px;
-//     &:focus {
-//       outline: none;
-//     }
-//   }
-
-//   > .nicknameArea {
-//     color: ${(props) => props.theme.mainText};
-//     width: 100%;
-//     font-size: 30px;
-//     font-weight: 700;
-//   }
-// `;
-
-// const EditNicknameBtn = styled.button`
-//   color: ${(props) => props.theme.mainText};
-//   width: 40px;
-//   margin-top: 10px;
-//   border: none;
-//   text-align: left;
-//   background-color: transparent;
-//   text-decoration: underline;
-//   font-size: 15px;
-//   font-weight: 600;
-//   cursor: pointer;
-// `;
 
 const MySettingContainer = styled.div`
   width: 100vw;
@@ -218,6 +133,7 @@ const MySettingContainer = styled.div`
 `;
 
 const PasswordWrapper = styled.div`
+
   display: flex;
   align-items: center;
   height: 50px;
@@ -227,6 +143,10 @@ const PasswordWrapper = styled.div`
     width: 100px;
     margin: 0 75px 0 30px;
     font-weight: 700;
+    @media screen and (max-width: 600px) {
+    margin: 0 50px 0px 20px;
+    /* width: 120px; */
+  }
   }
 
   > .editPasswordArea {
@@ -245,6 +165,7 @@ const PasswordWrapper = styled.div`
     color: ${(props) => props.theme.mainText};
     width: 560px;
   }
+
 `;
 
 const EditPasswordBtn = styled.button`
@@ -256,6 +177,9 @@ const EditPasswordBtn = styled.button`
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  /* @media screen and (max-width: 400px) {
+    margin-right:80px;
+  } */
 `;
 
 const MyWithdrawalContainer = styled.div`
@@ -295,12 +219,13 @@ const WarningText = styled.div`
   font-size: 13px;
   color: ${(props) => props.theme.diaryDate};
   padding-bottom: 10px;
-  margin: 0 70px -5px 30px;
-
+  margin: 0 70px -5px 20px;
+  /* margin:  */
   > .waringText {
     border-bottom: 1px solid ${(props) => props.theme.diaryInfoLine};
     padding-bottom: 15px;
   }
+
 `;
 
 const WithdrawalModalBack = styled.div`

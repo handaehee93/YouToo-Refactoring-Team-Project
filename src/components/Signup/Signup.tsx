@@ -120,6 +120,10 @@ const FormContainer = styled.form`
   border: none;
   border: 1px solid ${(props) => props.theme.disabledTagBorder};
   background-color: ${(props) => props.theme.disabledTagBackground};
+  @media screen and (max-width: 600px) {
+  width: 370px;
+  height: 380px;
+}
 `;
 
 const NicknameInput = styled.input`
@@ -205,6 +209,9 @@ const MoveLogin = styled.button`
   > .bold {
     font-weight: 500;
   }
+  @media screen and (max-width: 600px) {
+  width: 370px;
+}
 `;
 
 export const EmailErrormsg = styled.div`
