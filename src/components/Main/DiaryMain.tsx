@@ -4,19 +4,21 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { DiaryData} from "../../util/Type";
 import { getData} from '../../firebase';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { v4 as uuidv4 } from 'uuid';
 
 function DiaryMain() {
   const [diaryData, setDiaryData] = useState<DiaryData[]>([]);
   const [currentTab, setCurrentTab] = useState<number>(0); // 탭 이동 상태
   const [page, setPage] = useState<number>(1); // 현재 페이지 번호 (기본값: 1페이지부터 노출)
-  const LIMIT_COUNT: number = 12;
+  const LIMIT_COUNT: number = 8;
   const offset: number = (page - 1) * LIMIT_COUNT; // 각 페이지에서 첫 데이터의 위치(index) 계산
 
-const [selectTag, setSelectTag] = useState('')
+const [selectTag, setSelectTag] = useState('전체')
 const [filterData, setFilter] = useState<DiaryData[]>([])
 const [tagState,setTagState] = useState(false)
+const [filterDataLength, setFilterDataLength] = useState<number>(0)
+const [render, setRender] = useState(true)
+
 
 useEffect(() => {
   getData()
@@ -25,6 +27,7 @@ useEffect(() => {
 
 
 const selectTagHandler = (e:any,index:number) => {
+  setPage(1)
   setCurrentTab(index);
   setSelectTag(e.target.value)
   setTagState(true)
@@ -34,12 +37,12 @@ const selectTagHandler = (e:any,index:number) => {
   } else {
     const selectedTagData = diaryData && diaryData.filter((value) => Object.keys(value)[0] === e.target.value);
     setFilter(selectedTagData)
+    setFilterDataLength(selectTag.length)
+    // setdiaryDataLength(0)
+
   }
-  
+  console.log(render)
 };
-// console.log('다이어리 전체 데이터' ,diaryData)
-// console.log('필터된 데이터',filterData)
-// console.log('선택한 태그', selectTag)
 
 const tagArr = [
   { feel: "전체" },
@@ -64,53 +67,27 @@ return (
               value={tab.feel}
             >
               {tab.feel}
-              {/* <div className='el'>{tab.feel}</div> */}
             </button>
           );
         })}
       </ListTab>
-      {/* data.diaryId */}
       <DiaryMainContainer>
         <DiaryMainWrapper>
           {
             !tagState && diaryData ? diaryData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
-              let a = 0
-              return <DiaryList list={data} key={data.diaryId} />;
+              const uuid = uuidv4
+              return <DiaryList list={data} key={uuid()} />;
             }):
             tagState && filterData.slice(offset, offset + LIMIT_COUNT).map((data,idx) => {
-              let b = 0
-              return <DiaryList list={data} key={data.diaryId}/>;
+              const uuid = uuidv4
+              return <DiaryList list={data} key={uuid()}/>;
             })
           }
         </DiaryMainWrapper>
-
       </DiaryMainContainer>
       <Pagination
-        allPageLength={diaryData ? filterData.length : 0}
-        // tagOnePageLength={
-        //   diaryData.filter((value) => value.tag.includes(tagArr[1].feel)).length
-        // }
-        // tagTwoPageLength={
-        //   diaryData.filter((value) => value.tag.includes(tagArr[2].feel)).length
-        // }
-        // tagThreePageLength={
-        //   diaryData.filter((value) => value.tag.includes(tagArr[3].feel)).length
-        // }
-        // tagFourPageLength={
-        //   diaryData.filter((value) => value.tag.includes(tagArr[4].feel)).length
-        // }
-        // tagFivePageLength={
-        //   diaryData.filter((value) => value.tag.includes(tagArr[5].feel)).length
-        // }
-        // tagSixPageLength={
-        //   diaryData.filter((value) => value.tag.includes(tagArr[6].feel)).length
-        // }
-        // tagSevenPageLength={
-        //   diaryData.filter((value) => value.tag.includes(tagArr[7].feel)).length
-        // }
-        // tagEightPageLength={
-        //   diaryData.filter((value) => value.tag.includes(tagArr[8].feel)).length
-        // }
+        // allPageLength={render? diaryData.length : pagelength()}
+        allPageLength={render === true && selectTag === '전체' ? diaryData.length : filterDataLength}
         LIMIT_COUNT={LIMIT_COUNT}
         page={page}
         setPage={setPage}
@@ -168,6 +145,7 @@ const ListTab = styled.ul`
 const DiaryMainContainer = styled.div`
   display: flex;
   justify-content: center;
+  height:900px;
 `;
 
 const DiaryMainWrapper = styled.ul`
@@ -180,31 +158,5 @@ const DiaryMainWrapper = styled.ul`
   gap: 56.6px;
 `;
 
-  // 전체 diary 데이터 get 요청
-  // /diary
-  // const getDiaryData = async () => {
-  //   getData()
-  //     .then((data:any)=> setDiaryData(data))
-
-  //   getData()
-  //     .then((data)=> {
-  //       console.log(data)
-  //       setDiaryData(data)
-  //     })
-  //   try {
-  //     const res = await BASE_API.get(`http://ec2-15-164-230-157.ap-northeast-2.compute.amazonaws.com:8080`);
-  //     setDiaryData(res.data);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
-
-// 임시 데이터 저장 하는 코드
-{/* <button onClick={()=> {writeDiaryData(2)}}>ddd</button> */}
-{/* <button onClick={() => {getData().then((data:any)=> {
-setDiaryData(data)
-console.log(data)})}}>getdata</button> */}
-{/* <button onClick={() => {writeComment(8)}}>addComment</button> */}
 
 
