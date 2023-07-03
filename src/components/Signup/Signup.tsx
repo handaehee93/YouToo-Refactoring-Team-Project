@@ -26,7 +26,9 @@ function Signup() {
     const {email, password, nickname} = data
     signUp(email, password, nickname)
       .then(user => {
-        if (user) {
+        if(user === 'auth/email-already-in-use') {
+          alert('이미 가입되어 있는 이메일 입니다.')
+        } else {
           alert(`${nickname}님 환영합니다! 확인 버튼을 누르면 로그인 창으로 이동합니다!`)
           navigate("/login")
         }

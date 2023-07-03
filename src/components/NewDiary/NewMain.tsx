@@ -5,12 +5,12 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import NewPlayList from "./NewPlayList";
-import { DiaryData, PlaylistData } from "../../util/Type";
+import { PlaylistData } from "../../util/Type";
 import { getUidData,userState } from '../../firebase';
 import { writeDiaryData } from '../../firebase';
 import { useAppSelector } from '../../redux/store/hooks';
 import { selectLogin } from '../../redux/slice/LoginSlice';
-import { IoIosClose } from "react-icons/io";
+
 
 
 export default function NewMain():any {
@@ -25,7 +25,7 @@ export default function NewMain():any {
   const today: string = new Date().toISOString().substring(0, 10);
   const nickName = useAppSelector(selectLogin);
   const [newTag, setNewTag] = useState<string>('');
-  const [exData,setExdata] = useState()
+  // const [exData,setExdata] = useState()
   
   useEffect(() => {
     userState((user:any) => setUserUid(user.uid))
@@ -33,16 +33,14 @@ export default function NewMain():any {
   },[])
 
 
-useEffect(() => {
-  getUidData(userUid && userUid)
-  .then((res:any) => {
-    setExdata(res[0])
-    // console.log('ex',exData)
-    return
-    // const ss = res?.slice(0,10)
-    // console.log(ss && ss)
-  })
-},[])
+// useEffect(() => {
+//   getUidData(userUid && userUid)
+//   .then((res:any) => {
+//     setExdata(res[0])
+//     return
+
+//   })
+// },[])
 
 
 
@@ -105,6 +103,12 @@ useEffect(() => {
         setNewUrl("");
       });
   };
+// 다이어리 등록 함수
+  const submitHandler = () => {
+    writeDiaryData(userUid,newTitle,newBody,newPlayList, today, nickname, uidData, newTag)
+    alert('다이어리가 등록 되었습니다')
+    navigate('/')
+  }
 
       // 드롭다운 선택 시 태그 추가하는 이벤트 핸들러
   const addCategory = (value: string) => {
@@ -121,7 +125,7 @@ useEffect(() => {
             placeholder='제목을 입력하세요'
             onChange={changeNewTitle}
           />
-          <SubmitButton onClick={() => writeDiaryData(userUid,newTitle,newBody,newPlayList, today, nickname, uidData, newTag)} disabled={newTitle.length === 0}>
+          <SubmitButton onClick={submitHandler} disabled={newTitle.length === 0}>
             등록하기
           </SubmitButton>
         </TitleArea>

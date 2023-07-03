@@ -41,7 +41,7 @@ const selectTagHandler = (e:any,index:number) => {
     // setdiaryDataLength(0)
 
   }
-  console.log(render)
+
 };
 
 const tagArr = [

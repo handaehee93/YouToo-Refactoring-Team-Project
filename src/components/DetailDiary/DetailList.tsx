@@ -3,7 +3,6 @@ import DetailPlayList from "./DetailPlayList";
 import { useEffect, useState } from "react";
 import {  useNavigate } from "react-router-dom";
 import { DiaryData} from "../../util/Type";
-import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import DOMPurify from "dompurify";
 import { getUserData, removeFromDiary, userState} from '../../firebase';
 
@@ -24,7 +23,7 @@ export default function DetailList({ list, listUid}: Props) {
     userState((user:any) => setUserUid(user.uid))
   },[])
 
-  const [checkLike, setCheckLike] = useState<boolean>(false);
+  // const [checkLike, setCheckLike] = useState<boolean>(false);
   const [withDrawalModalOpen, setWithdrawalModalOpen] = useState<boolean>(false);
 
 
@@ -126,16 +125,7 @@ export default function DetailList({ list, listUid}: Props) {
                   </button>
                 </DeleteModalView>
               </DeleteModalBack>
-            ) : null}
-            <button className='like'>
-              {checkLike === true ? (
-                <AiFillHeart className='likeIcon' size={16} />
-              ) : (
-                <AiOutlineHeart className='likeIcon' size={16} />
-              )}
-              좋아요
-              <span className='likeCount'>{list.likeCount}</span>
-            </button>
+            ) : null} 
           </ButtonArea>
         </TitleArea>
         <AlbumCoverArea>

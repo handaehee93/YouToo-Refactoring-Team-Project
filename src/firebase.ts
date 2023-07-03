@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, set, onValue, child, get, remove } from "firebase/database";
+import { getDatabase, ref, set,  child, get, remove } from "firebase/database";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -40,8 +40,8 @@ export async function  signUp (email:string, password:string, nickname:string) {
   })
   .catch((error) => {
     const errorCode = error.code;
-    const errorMessage = error.message;
-    return errorMessage
+    // const errorMessage = error.message;
+    return errorCode
   });
 }
 
@@ -59,20 +59,16 @@ export async function userLogin (email:any, password:string) {
   return signInWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     const user = userCredential.user;
-    console.log('로그인한 유저 정보',user)
     return user
   })
   .catch((error) => {
     const errorCode = error.code;
-    const errorMessage = error.message;
+    // const errorMessage = error.message;
     return errorCode
   });
 }
 
-interface LoginUserType {
-  userEmail:string;
-  userNickname:string
-}
+
 // 현재 로그인한 user의 정보를 가져오는 함수
 const dbRef = ref(db);
 export async function getUserData (uid:string){
@@ -108,7 +104,7 @@ export async function removeUserData (userUid:string) {
 }
 
 // 데이터 post하는 함수
-export function writeDiaryData(userUid:any,title:string, body:string, playlists:any, today:string, nickname: string , uidData:any,newTag:string) {
+export async function writeDiaryData(userUid:any,title:string, body:string, playlists:any, today:string, nickname: string , uidData:any,newTag:string) {
   const uuid = uuidv4()
   set(ref(db, `diarys/${userUid}/${newTag}`), {
       diaryId: uuid,

@@ -1,21 +1,18 @@
 import styled from "styled-components";
 import { useNavigate, Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useState } from "react";
-
 import { getUserData, userLogin } from '../../firebase';
 import { useAppDispatch } from '../../redux/store/hooks';
-import { loginSlice, logined } from '../../redux/slice/LoginSlice';
+import { logined } from '../../redux/slice/LoginSlice';
 
 
 
 interface FormValue {
   email: string;
-  password: any;
+  password: string;
 }
 
 function Login() {
-  const [loginError, setLoginError] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -28,18 +25,16 @@ function Login() {
   const onSubmit: SubmitHandler<FormValue> = (data) => {
     userLogin(data.email, data.password)
       .then(user => {
-        console.log('로그인한',user.uid)
+        console.log('로그인한',user)
         if(user === 'auth/invalid-email') { 
-          alert('이메일과 비밀번호를 다시 확인해 주세요')
-          // dispatch(logined())
-          // dispatch(logined(user))
-          // dispatch(loginSlice.actions.login())
+          return alert('이메일과 비밀번호를 다시 확인해 주세요')
+        }else if (user === 'auth/wrong-password'){
+          return alert('이메일과 비밀번호를 다시 확인해 주세요')
         } else {
           getUserData(user.uid)
             .then((res:any) => dispatch(logined(res && res[1])))
             // .then((res:any) => console.log('로그인res',res))
             .then(()=>  navigate('/'))
-
         }
       })
     };
@@ -175,12 +170,6 @@ const LoginButton = styled.button`
   }
 `;
 
-const PasswordFind = styled.div`
-  margin-top: 23px;
-  color: ${(props) => props.theme.mainText};
-  font-size: 13px;
-  cursor: pointer;
-`;
 
 const MoveSignup = styled.button`
   font-size: 14px;
